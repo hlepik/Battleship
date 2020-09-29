@@ -1,83 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Threading.Channels;
 using MenuSystem;
+using Console = Colorful.Console;
 
 namespace ConsoleApp
 {
     class Program
     {
         static void Main(string[] args)
+
+
         {
-            Console.ForegroundColor = ConsoleColor.Magenta;
 
-            var menu2 = new Menu(2)
-            {
-                SubTitle = "BattleShip",
-                MenuItems = new List<MenuItem>()
-                {
-                    new MenuItem()
-                    {
-                        UserChoice = "1",
-                        Title = "Play game: Human vs Human",
-                        MethodToExecute = DefaultMenuAction
-                    },
-                    new MenuItem()
-                    {
-                        UserChoice = "2",
-                        Title = "Play game: Human vs AI",
-                        MethodToExecute = DefaultMenuAction
-                    },
-                    new MenuItem()
-                    {
-                        UserChoice = "3",
-                        Title = "Play game: AI vs AI",
-                        MethodToExecute = DefaultMenuAction
-                    },
-                }
+            int red = 200;
+            int green = 100;
+            int blue = 255;
 
-            };
-            var menu1 = new Menu(1)
-            {
-                SubTitle = "Game menu",
-                MenuItems = new List<MenuItem>()
-                {
-                    new MenuItem()
-                    {
-                        UserChoice = "1",
-                        Title = "BattleShip",
-                        MethodToExecute = menu2.Run,
-                    },
-                }
-            };
+            Console.WriteAscii("BATTLESHIP", Color.FromArgb(red, green, blue));
 
+            var menu2 = new Menu(MenuLevel.Level2Plus);
+            menu2.AddMenuItem(new MenuItem("New game human vs human", "1", BattleShip));
+            menu2.AddMenuItem(new MenuItem("New game human vs AI", "2", BattleShip));
+            menu2.AddMenuItem(new MenuItem("New game AI vs AI", "3", BattleShip));
 
-            var menu0 = new Menu()
+            var menu1 = new Menu(MenuLevel.Level1);
+            menu1.AddMenuItem(new MenuItem("Play a game", "1", menu2.RunMenu));
+            menu1.AddMenuItem(new MenuItem("Return to saved game", "2", LoadGame));
 
-            {
+            var menu = new Menu(MenuLevel.Level0);
+            menu.AddMenuItem(new MenuItem("Choose a game", "1", menu1.RunMenu));
 
-                SubTitle = "Main menu",
-                MenuItems = new List<MenuItem>()
-                {
-                    new MenuItem()
-                    {
-                        UserChoice = "1",
-                        Title = "Play a game",
-                        MethodToExecute = menu1.Run
-                    },
-
-                }
-            };
-            menu0.Run();
+            menu.RunMenu();
 
         }
 
-
-        static void DefaultMenuAction()
+        static string LoadGame()
         {
-            Console.WriteLine("Not implemented yet!");
+            System.Console.WriteLine("Not implemented yet!");
+            return "";
+        }
+
+        static string BattleShip()
+        {
+
+            return "";
         }
     }
 }
-
-
-

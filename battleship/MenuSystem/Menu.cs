@@ -1,121 +1,151 @@
 using System;
 using System.Collections.Generic;
+using Console = Colorful.Console;
+using System.Drawing;
 using System.Linq;
+
 
 namespace MenuSystem
 {
+
+    public enum MenuLevel
+    {
+        Level0,
+        Level1,
+        Level2Plus
+    }
+
     public class Menu
     {
-        public string SubTitle { get; set; } = null!;
-        public List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
+        //private  List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
+        // privaatseks tuleb teha. Parem ja kiirem valik oleks dictionary
 
-        private readonly MenuItem _menuItemExit = new MenuItem()
+        private Dictionary<string, MenuItem> MenuItems { get; set; } = new Dictionary<string, MenuItem>();
 
+
+        private readonly MenuLevel _menuLevel;
+
+        private readonly string[] _reservedActions = new[] {"x", "m", "r"};
+
+
+
+        public Menu(MenuLevel level)
         {
-            UserChoice = "X",
-            Title = "Exit"
+            _menuLevel = level;
 
-        };
+        }
 
-        private readonly MenuItem _returnPrevious = null!;
-        private readonly MenuItem _returnMain = null!;
-        private int _level;
-
-        public Menu(int level = 0)
+        public void AddMenuItem(MenuItem item)
         {
-            _level = level;
 
-
-            if (_level >= 1)
+            if (item.UserChoice == "")
             {
-                _returnMain = new MenuItem()
-                {
-                    UserChoice = "M",
-                    Title = "Return to Main menu"
-                };
-                if (_level >= 2)
-                {
-                    _returnPrevious = new MenuItem()
-                    {
-                        UserChoice = "P",
-                        Title = "Return to Previous menu"
-                    };
-                }
+                throw new ArgumentException($"UserChoice cannot be empty");
             }
-        }
-        static class Choice
-        {
-            public static string? Userchoice;
+
+            MenuItems.Add(item.UserChoice, item);
+
+            //crash when the key is already there
         }
 
-        public void Run()
+        public string RunMenu()
         {
+
+            var userChoice = "";
 
             do
+
             {
 
-                Console.WriteLine($"====== {SubTitle} ======");
-                foreach (var menuItem in MenuItems)
+                Console.ForegroundColor = Color.DarkBlue;
+                if (_menuLevel == MenuLevel.Level0)
                 {
-                    Console.WriteLine(menuItem);
-
-                }
-                Console.WriteLine("------------------------");
-
-                if (_returnPrevious != null)
+                    Console.WriteLine("====== Main Menu ======");
+                }else if (_menuLevel == MenuLevel.Level1)
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine(_returnPrevious);
-                }
-
-                if (_returnMain != null)
-                {
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine(_returnMain);
-                }
-
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
-                Console.WriteLine(_menuItemExit);
-                Console.ForegroundColor = ConsoleColor.Magenta;
-
-                Console.WriteLine("------------------------");
-
-                Console.Write(">");
-
-                Choice.Userchoice = Console.ReadLine()?.Trim().ToUpper() ?? "";
-
-
-
-                if (Choice.Userchoice == _menuItemExit.UserChoice)
-                {
-                    Console.WriteLine("Closing down......");
-                    Environment.Exit(0);
-                }
-                if (Choice.Userchoice == _returnMain?.UserChoice)
-                {
-
-                    _level = 0;
-                    break;
-
-                }
-
-
-                var userMenuItem = MenuItems.FirstOrDefault(t => t.UserChoice == Choice.Userchoice);
-                if (userMenuItem != null)
-                {
-                    userMenuItem.MethodToExecute!();
+                    Console.WriteLine("====== Level 1 Menu ======");
                 }
                 else
                 {
-                    Console.WriteLine("I don't have this option!");
+                    Console.WriteLine("====== BattleShip ======");
                 }
 
-            } while (Choice.Userchoice != _menuItemExit.UserChoice && Choice.Userchoice != _returnMain?.UserChoice
-                                                                   && Choice.Userchoice != _returnPrevious?.UserChoice);
+
+                Console.ForegroundColor = Color.Blue;
+                foreach (var menuItem in MenuItems.Values)
+                {
+                    Console.WriteLine(menuItem);
+                }
+
+                Console.WriteLine("------------------------");
+                if (_menuLevel >= MenuLevel.Level1)
+                {
+
+                    Console.ForegroundColor = Color.Cyan;
+                    Console.WriteLine("M Return to Main");
+                    if (_menuLevel >= MenuLevel.Level2Plus)
+                    {
+
+                        Console.ForegroundColor = Color.Green;
+                        Console.WriteLine("R Return to previous");
+                    }
+                }
+
+                Console.ForegroundColor = Color.DarkGreen;
+                Console.WriteLine("X Exit");
+                Console.ForegroundColor = Color.Blue;
+
+
+                Console.WriteLine("------------------------");
+
+
+                Console.Write(">");
+
+
+                userChoice = Console.ReadLine()?.ToLower() ?? "";
+
+
+                if (!_reservedActions.Contains(userChoice))
+                {
+                    if (MenuItems.TryGetValue(userChoice, out var userMenuItem))
+                    {
+                        userChoice = userMenuItem.MethodToExecute();
+                    }
+                    else
+                    {
+                        Console.WriteLine("I don't have this option!");
+                    }
+                }
+
+                if (userChoice == "x")
+                {
+                    if (_menuLevel == MenuLevel.Level0)
+                    {
+                        Console.WriteLine("Closing down......");
+                    }
+
+                    break;
+                }
+
+                if (_menuLevel == MenuLevel.Level2Plus && userChoice == "r")
+                {
+                    userChoice = string.Empty;
+                    break;
+                }
+
+                if (_menuLevel != MenuLevel.Level0 && userChoice == "m")
+                {
+                    break;
+                }
+
+
+            } while (userChoice != "x");
+
+            return userChoice;
+
+            }
+
+
         }
-
-    }
-
-
 
 }
