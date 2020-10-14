@@ -3,35 +3,43 @@ using System.Collections.Generic;
 using Console = Colorful.Console;
 using System.Drawing;
 using System.Linq;
+using BattleShipUi;
+using GameBrain;
 
 
 namespace MenuSystem
 {
 
-    public enum MenuLevel
-    {
-        Level0,
-        Level1,
-        Level2Plus
-    }
 
     public class Menu
     {
-        //private  List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
-        // privaatseks tuleb teha. Parem ja kiirem valik oleks dictionary
 
         private Dictionary<string, MenuItem> MenuItems { get; set; } = new Dictionary<string, MenuItem>();
 
 
-        private readonly MenuLevel _menuLevel;
+        // private readonly MenuLevel _menuLevel;
+        private int _menuLevel;
 
-        private readonly string[] _reservedActions = new[] {"x", "m", "r"};
+        private MenuItem? _menuItemReturnPrevious;
+        private MenuItem? _menuItemReturnMain;
+
+        private MenuItem _menuItemExit = new MenuItem("Exit", "X", () => "");
 
 
-
-        public Menu(MenuLevel level)
+        public Menu(int menuLevel = 0)
         {
-            _menuLevel = level;
+            _menuLevel = menuLevel;
+
+
+            if (_menuLevel >= 1 && _menuLevel < 3)
+            {
+                _menuItemReturnMain = new MenuItem("Return to main", "M", () => "");
+            }
+
+            if (_menuLevel >= 2 && _menuLevel < 3)
+            {
+                _menuItemReturnPrevious = new MenuItem("Return to previous", "R", () => "");
+            }
 
         }
 
@@ -48,6 +56,8 @@ namespace MenuSystem
             //crash when the key is already there
         }
 
+        public object? Title { get; set; }
+
         public string RunMenu()
         {
 
@@ -58,19 +68,24 @@ namespace MenuSystem
             {
 
                 Console.ForegroundColor = Color.DarkBlue;
-                if (_menuLevel == MenuLevel.Level0)
+                if (_menuLevel == 0)
                 {
-                    Console.WriteLine("====== Main Menu ======");
-                }else if (_menuLevel == MenuLevel.Level1)
+                    Title = "Main Menu";
+                }
+                else if (_menuLevel == 1)
                 {
-                    Console.WriteLine("====== Level 1 Menu ======");
+                    Title = "Level 1 Menu";
                 }
                 else
                 {
-                    Console.WriteLine("====== BattleShip ======");
+                    Title = "BattleShip";
                 }
 
 
+                Console.ForegroundColor = Color.DarkBlue;
+
+
+                Console.WriteLine($"====== {Title} ======");
                 Console.ForegroundColor = Color.Blue;
                 foreach (var menuItem in MenuItems.Values)
                 {
@@ -78,38 +93,35 @@ namespace MenuSystem
                 }
 
                 Console.WriteLine("------------------------");
-                if (_menuLevel >= MenuLevel.Level1)
+                if (_menuItemReturnPrevious != null)
                 {
-
                     Console.ForegroundColor = Color.Cyan;
-                    Console.WriteLine("M Return to Main");
-                    if (_menuLevel >= MenuLevel.Level2Plus)
-                    {
-
-                        Console.ForegroundColor = Color.Green;
-                        Console.WriteLine("R Return to previous");
-                    }
+                    Console.WriteLine(_menuItemReturnPrevious);
                 }
 
+                if (_menuItemReturnMain != null)
+                {
+                    Console.ForegroundColor = Color.Green;
+                    Console.WriteLine(_menuItemReturnMain);
+                }
+
+
                 Console.ForegroundColor = Color.DarkGreen;
-                Console.WriteLine("X Exit");
+                Console.WriteLine(_menuItemExit);
                 Console.ForegroundColor = Color.Blue;
-
-
                 Console.WriteLine("------------------------");
-
 
                 Console.Write(">");
 
+                userChoice = Console.ReadLine()?.Trim().ToUpper() ?? "";
 
-                userChoice = Console.ReadLine()?.ToLower() ?? "";
+                if (_menuItemExit.UserChoice != userChoice && _menuItemReturnMain?.UserChoice != userChoice
+                                                           && _menuItemReturnPrevious?.UserChoice != userChoice)
 
-
-                if (!_reservedActions.Contains(userChoice))
                 {
                     if (MenuItems.TryGetValue(userChoice, out var userMenuItem))
                     {
-                        userChoice = userMenuItem.MethodToExecute();
+                        userChoice = userMenuItem?.MethodToExecute!();
                     }
                     else
                     {
@@ -117,9 +129,9 @@ namespace MenuSystem
                     }
                 }
 
-                if (userChoice == "x")
+                if (userChoice == _menuItemExit.UserChoice)
                 {
-                    if (_menuLevel == MenuLevel.Level0)
+                    if (_menuLevel == 0)
                     {
                         Console.WriteLine("Closing down......");
                     }
@@ -127,25 +139,23 @@ namespace MenuSystem
                     break;
                 }
 
-                if (_menuLevel == MenuLevel.Level2Plus && userChoice == "r")
+                if (_menuLevel >= 2 && userChoice == _menuItemReturnPrevious?.UserChoice)
                 {
                     userChoice = string.Empty;
                     break;
                 }
 
-                if (_menuLevel != MenuLevel.Level0 && userChoice == "m")
+                if (_menuLevel != 0 && userChoice == _menuItemReturnMain?.UserChoice)
                 {
                     break;
                 }
 
 
-            } while (userChoice != "x");
+            } while (userChoice != _menuItemExit.UserChoice);
 
             return userChoice;
 
-            }
-
-
         }
 
+    }
 }
