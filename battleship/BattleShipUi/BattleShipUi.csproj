@@ -2,16 +2,15 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <Nullable>enable</Nullable>
+        <RootNamespace>BattleShipUi</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Colorful.Console" Version="1.2.11" />
-      <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
+      <PackageReference Include="EntityFramework" Version="6.4.4" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BattleShipUi\BattleShipUi.csproj" />
       <ProjectReference Include="..\GameBrain\GameBrain.csproj" />
     </ItemGroup>
 

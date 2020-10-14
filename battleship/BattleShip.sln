@@ -4,6 +4,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "ConsoleApp\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MenuSystem", "MenuSystem\MenuSystem.csproj", "{DB421460-5ADB-4EA3-B309-8C5D7250F650}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameBrain", "GameBrain\GameBrain.csproj", "{401ACD53-A7C9-4A17-A770-BF5553C05903}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleShipUi", "BattleShipUi\BattleShipUi.csproj", "{D2224F62-906F-4B7B-9E03-C648527948CF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{4E1CE491-84D6-4B17-A677-96559A7D060D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +24,13 @@ Global
 		{DB421460-5ADB-4EA3-B309-8C5D7250F650}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB421460-5ADB-4EA3-B309-8C5D7250F650}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB421460-5ADB-4EA3-B309-8C5D7250F650}.Release|Any CPU.Build.0 = Release|Any CPU
+		{401ACD53-A7C9-4A17-A770-BF5553C05903}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{401ACD53-A7C9-4A17-A770-BF5553C05903}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{401ACD53-A7C9-4A17-A770-BF5553C05903}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{401ACD53-A7C9-4A17-A770-BF5553C05903}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2224F62-906F-4B7B-9E03-C648527948CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2224F62-906F-4B7B-9E03-C648527948CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2224F62-906F-4B7B-9E03-C648527948CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2224F62-906F-4B7B-9E03-C648527948CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
