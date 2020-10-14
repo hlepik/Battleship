@@ -71,20 +71,22 @@ namespace ConsoleApp
                     while (true)
                     {
 
-                        System.Console.WriteLine($"{(BattleShip.NextMoveByX ? BattleShip.Player1.ToUpper() : BattleShip.Player2.ToUpper())}'s turn!");
+                        // System.Console.WriteLine($"{(BattleShip._nextMoveByX ? BattleShip.Player1.ToUpper() : BattleShip.Player2.ToUpper())}'s turn!");
+                        System.Console.WriteLine($"{(BattleShip._nextMoveByX ? "Player1" : "Player2")}'s turn!");
+
                         System.Console.WriteLine("Press Enter to continue!");
                         ConsoleKeyInfo keyInfo = Console.ReadKey();
                         while(keyInfo.Key != ConsoleKey.Enter)
                             keyInfo = Console.ReadKey();
                         {
-                            GetTableName(BattleShip.Player1);
+                            System.Console.WriteLine("Player1 Board");
                             BattleShipConsoleUi.DrawBoard(BattleShip.Board1);
-                            GetTableName(BattleShip.Player2);
+                            System.Console.WriteLine("Player2 Board");
                             BattleShipConsoleUi.DrawBoard(BattleShip.Board2);
                         }
                         var board = BattleShip.Board2;
 
-                        if (BattleShip.NextMoveByX)
+                        if (game.NextMoveByX)
                         {
                             board = BattleShip.Board1;
                         }
@@ -95,9 +97,9 @@ namespace ConsoleApp
 
                     Console.ForegroundColor = Color.Purple;
 
-                    GetTableName(BattleShip.Player1);
+                    System.Console.WriteLine("Player1 board");
                     BattleShipConsoleUi.DrawBoard(BattleShip.Board1);
-                    GetTableName(BattleShip.Player2);
+                    System.Console.WriteLine("Player2 board");
                     BattleShipConsoleUi.DrawBoard(BattleShip.Board2);
 
                     return "";
@@ -223,28 +225,27 @@ namespace ConsoleApp
             var y = 26;
             var input = "";
 
-            while(x > BattleShip.Width -1 || y > BattleShip.Height-1 || input.Length != 2){
+            while(x > BattleShip.Width -1 || y > BattleShip.Height-1 || input.Length < 2 || input.Length > 3){
                 Console.WriteLine("Upper left corner is (A 1)!");
                 Console.Write($"Give Y A-{Convert.ToChar(BattleShip.Height + 64)}, X 1-{BattleShip.Height}:");
                 var letters = string.Empty;
 
                 input = Console.ReadLine().Trim();
 
-                if (input.Length == 2)
-                {
-                    foreach (var t in input) {
-                        if (Char.IsNumber(t))
-                        {
-                            letters += t.ToString();
-                        }
-                        else if (char.IsLetter(t))
-                        {
-                            y = char.ToUpper(input[0]) - 65;
-                        }
+
+                foreach (var t in input) {
+                    if (Char.IsNumber(t))
+                    {
+                        letters += t.ToString();
                     }
-                    x = int.Parse(letters) - 1;
+                    else if (char.IsLetter(t))
+                    {
+                        y = char.ToUpper(input[0]) - 65;
+                    }
                 }
-                if (input.Length != 2 || x > BattleShip.Width -1 || y > BattleShip.Height-1)
+                x = int.Parse(letters) - 1;
+
+                if (input.Length > 3 || input.Length < 2 || x > BattleShip.Width -1 || y > BattleShip.Height-1)
                 {
                     Console.ForegroundColor = Color.Maroon;
                     System.Console.WriteLine("Input string was not in a correct format!");
@@ -271,9 +272,6 @@ namespace ConsoleApp
             var jsonString = System.IO.File.ReadAllText(fileName);
 
             game.SetGameStateFromJsonString(jsonString);
-
-            BattleShipConsoleUi.DrawBoard(game.GetBoard( ));
-            BattleShipConsoleUi.DrawBoard(game.GetBoard( ));
 
             return "";
         }
