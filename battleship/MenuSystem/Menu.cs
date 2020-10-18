@@ -22,12 +22,13 @@ namespace MenuSystem
 
         private MenuItem? _menuItemReturnPrevious;
         private MenuItem? _menuItemReturnMain;
-
         private MenuItem _menuItemExit = new MenuItem("Exit", "X", () => "");
+
 
 
         public Menu(int menuLevel = 0)
         {
+            var game = new BattleShip();
             _menuLevel = menuLevel;
 
 
@@ -76,7 +77,7 @@ namespace MenuSystem
                 {
                     Title = "Level 1 Menu";
                 }
-                else
+                else if(_menuLevel == 2)
                 {
                     Title = "BattleShip";
                 }
@@ -84,8 +85,10 @@ namespace MenuSystem
 
                 Console.ForegroundColor = Color.DarkBlue;
 
-
-                Console.WriteLine($"====== {Title} ======");
+                if (_menuLevel < 3)
+                {
+                    Console.WriteLine($"====== {Title} ======");
+                }
                 Console.ForegroundColor = Color.Blue;
                 foreach (var menuItem in MenuItems.Values)
                 {
@@ -116,7 +119,7 @@ namespace MenuSystem
                 userChoice = Console.ReadLine()?.Trim().ToUpper() ?? "";
 
                 if (_menuItemExit.UserChoice != userChoice && _menuItemReturnMain?.UserChoice != userChoice
-                                                           && _menuItemReturnPrevious?.UserChoice != userChoice)
+                 && _menuItemReturnPrevious?.UserChoice != userChoice)
 
                 {
                     if (MenuItems.TryGetValue(userChoice, out var userMenuItem))
@@ -128,7 +131,6 @@ namespace MenuSystem
                         Console.WriteLine("I don't have this option!");
                     }
                 }
-
                 if (userChoice == _menuItemExit.UserChoice)
                 {
                     if (_menuLevel == 0)

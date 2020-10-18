@@ -11,75 +11,98 @@ namespace GameBrain
 {
     public class BattleShip
     {
-
-        public static CellState[,]? Board1;
-        public static CellState[,]? Board2;
+        private bool _nextMoveByX = true;
         private CellState[,] _board1 = null!;
         private CellState[,] _board2 = null!;
-        public static int Width;
-        public static int Height;
+        private int _width;
+        private int _height;
+        private string _player1 = null!;
+        private string _player2 = null!;
+        public bool NextMoveByX => _nextMoveByX;
 
-        public static string Player1 = null!;
-        public static string Player2 = null!;
 
-        public static bool NextMoveByX = true;
+        public BattleShip(int width, int height, string player1, string player2)
+        {
+            _player1 = player1;
+            _player2 = player2;
+            _width = width;
+            _height = height;
 
-        public CellState[,] GetBoard()
+        }
+        public BattleShip()
         {
 
+        }
+        public string GetPlayer1()
+        {
+            return _player1;
+        }
+        public string GetPlayer2()
+        {
+            return _player2;
+        }
+        public int GetWidth()
+        {
+            return _width;
+        }
+        public int GetHeight()
+        {
+            return _height;
+        }
+
+
+        public CellState[,] GetBoard(string player)
+        {
             if (_board1 == null)
             {
-                _board1 = new CellState[Width,Height];
-                _board2 = new CellState[Width,Height];
+                _board1 = new CellState[_width, _height];
+                _board2 = new CellState[_width, _height];
             }
 
-            if (NextMoveByX)
+            if (player == _player1)
             {
                 return _board1;
             }
 
             return _board2;
-        }
 
+        }
 
         public bool MakeAMove(int x, int y, CellState[,] board)
         {
 
-            Board2 = _board2;
-            Board1 = _board1;
-            if (board == Board1)
+            if (board == _board1)
             {
 
-                if(Board2[x, y] == CellState.Empty)
+                if(_board2[x, y] == CellState.Empty)
                 {
-                    Board2[x, y] = CellState.X;
-                    NextMoveByX = !NextMoveByX;
-
+                   _board2[x, y] = CellState.X;
+                    _nextMoveByX = !_nextMoveByX;
                     return true;
                 }
             }
             else
             {
-                if(Board1[x, y] == CellState.Empty)
+                if(_board1[x, y] == CellState.Empty)
                 {
-                    Board1[x, y] = CellState.X;
-                    NextMoveByX = !NextMoveByX;
+                   _board1[x, y] = CellState.X;
+                    _nextMoveByX = !_nextMoveByX;
 
                     return true;
                 }
             }
-
             return false;
         }
+
         public string GetSerializedGameState()
         {
             var state = new GameState
             {
-                NextMoveByX = NextMoveByX,
-                Width = _board1.GetLength(0),
-                Height =_board1.GetLength(0),
-                PlayerFirst = Player1,
-                PlayerSecond = Player2
+                NextMoveByX = _nextMoveByX,
+                Width = _width,
+                Height = _height,
+                PlayerFirst = _player1,
+                PlayerSecond = _player2
             };
 
             state.Board2 = new CellState[state.Width ][];
@@ -116,9 +139,13 @@ namespace GameBrain
             var state = JsonSerializer.Deserialize<GameState>(jsonString);
 
             // restore actual state from deserialized state
-            NextMoveByX = state.NextMoveByX;
+            _player1 = state.PlayerFirst;
+            _player2 = state.PlayerSecond;
+            _nextMoveByX = state.NextMoveByX;
             _board1 =  new CellState[state.Width, state.Height];
             _board2 =  new CellState[state.Width, state.Height];
+            _width = state.Width;
+            _height = state.Height;
 
             for (var x = 0; x < state.Width; x++)
             {
