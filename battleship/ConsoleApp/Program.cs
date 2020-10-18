@@ -21,11 +21,12 @@ namespace ConsoleApp
 
             Console.WriteAscii("BATTLESHIP", Color.FromArgb(red, green, blue));
 
-
             var menu2 = new Menu(2);
-            menu2.AddMenuItem(new MenuItem("New game human vs human", "1", Game));
-            menu2.AddMenuItem(new MenuItem("New game human vs AI", "2", Game));
-            menu2.AddMenuItem(new MenuItem("New game AI vs AI", "3", Game));
+            menu2.AddMenuItem(new MenuItem("New game human vs human", "1", Parameters));
+            menu2.AddMenuItem(new MenuItem("New game human vs AI", "2", Parameters));
+            menu2.AddMenuItem(new MenuItem("New game AI vs AI", "3", Parameters));
+            menu2.AddMenuItem(new MenuItem($"Load game", userChoice: "L", () => { return LoadGameAction(); })
+            );
 
             var menu1 = new Menu(1);
             menu1.AddMenuItem(new MenuItem("Play game", "1", menu2.RunMenu));
@@ -38,148 +39,133 @@ namespace ConsoleApp
 
         }
 
-
-        static string DefaultMenuAction()
+        static string Parameters()
         {
-            Console.WriteLine("Not implemented yet!");
+            var player1 = "";
+            var player2 = "";
+            var width = 0;
+            var height = 0;
+            (player1, player2) = AskName();
+            (width, height) = BoardSize();
+            var game = new BattleShip(width, height, player1, player2);
+            Game(game);
 
             return "";
         }
 
 
-        static string Game()
+        static string Game(BattleShip game)
         {
 
-            var game = new BattleShip();
-
-            AskName();
-            BoardSize();
-            BattleShip.Board1 = game.GetBoard();
-            BattleShip.Board2 = game.GetBoard();
-
-            Console.Clear();
+            var board1 = game.GetBoard(game.GetPlayer1());
+            var board2 = game.GetBoard(game.GetPlayer2());
 
             var userChoice = "";
 
+            Console.Clear();
+
+            GetTableName(game.GetPlayer1());
+            BattleShipConsoleUi.DrawBoard(board1);
+            GetTableName(game.GetPlayer2());
+            BattleShipConsoleUi.DrawBoard(board2);
+            Console.ForegroundColor = Color.Purple;
+            System.Console.WriteLine($"{(game.NextMoveByX ? game.GetPlayer1().ToUpper() : game.GetPlayer2().ToUpper())}'s turn!");
+            Console.ForegroundColor = Color.Blue;
+
+            var board = board2;
+
+            if (game.NextMoveByX)
+            {
+                board = board1;
+            }
+
+            var (x, y) = GetMoveCordinates(game);
+            Console.WriteLine();
+            game.MakeAMove(x, y, board);
+
+            Console.ForegroundColor = Color.Purple;
+
+            GetTableName(game.GetPlayer1());
+            BattleShipConsoleUi.DrawBoard(board1);
+            GetTableName(game.GetPlayer2());
+            BattleShipConsoleUi.DrawBoard(board2);
+
             var menu = new Menu(3);
-            menu.AddMenuItem(new MenuItem(
-                $"Next move",
-                userChoice: "N",
-                () =>
-                {
-                    Console.Clear();
-                    while (true)
-                    {
+            menu.AddMenuItem(new MenuItem($"Save game", userChoice: "S",
+                () => { return SaveGameAction(game); }));
+            menu.AddMenuItem(new MenuItem($"Next move", userChoice: "N",
+                () => { return Game(game); }));
 
-                        // System.Console.WriteLine($"{(BattleShip._nextMoveByX ? BattleShip.Player1.ToUpper() : BattleShip.Player2.ToUpper())}'s turn!");
-                        System.Console.WriteLine($"{(BattleShip._nextMoveByX ? "Player1" : "Player2")}'s turn!");
+            menu.RunMenu();
+            Console.Clear();
 
-                        System.Console.WriteLine("Press Enter to continue!");
-                        ConsoleKeyInfo keyInfo = Console.ReadKey();
-                        while(keyInfo.Key != ConsoleKey.Enter)
-                            keyInfo = Console.ReadKey();
-                        {
-                            System.Console.WriteLine("Player1 Board");
-                            BattleShipConsoleUi.DrawBoard(BattleShip.Board1);
-                            System.Console.WriteLine("Player2 Board");
-                            BattleShipConsoleUi.DrawBoard(BattleShip.Board2);
-                        }
-                        var board = BattleShip.Board2;
 
-                        if (game.NextMoveByX)
-                        {
-                            board = BattleShip.Board1;
-                        }
-
-                        var (x, y) = GetMoveCordinates(game);
-
-                    game.MakeAMove(x, y, board);
-
-                    Console.ForegroundColor = Color.Purple;
-
-                    System.Console.WriteLine("Player1 board");
-                    BattleShipConsoleUi.DrawBoard(BattleShip.Board1);
-                    System.Console.WriteLine("Player2 board");
-                    BattleShipConsoleUi.DrawBoard(BattleShip.Board2);
-
-                    return "";
-                    }
-                })
-            );
-            menu.AddMenuItem(new MenuItem(
-                $"Save game",
-                userChoice: "S",
-                () => { return SaveGameAction(game); })
-            );
-            menu.AddMenuItem(new MenuItem(
-                $"Load game",
-                userChoice: "L",
-                () => { return LoadGameAction(game); })
-            );
-
-            userChoice = menu.RunMenu();
             return userChoice;
-    }
+        }
 
         public static void GetTableName(string name)
         {
-
+            var game = new BattleShip();
             Console.ForegroundColor = Color.Purple;
-            Console.SetCursorPosition(BattleShip.Width * 2 -1, Console.CursorTop);
+            Console.SetCursorPosition( 5 * 2, Console.CursorTop);
             System.Console.WriteLine($"{name.ToUpper()}'s board");
 
         }
 
-        public static void  AskName()
+        static Tuple<string, string>  AskName()
         {
 
             System.Console.WriteLine("Please enter Player 1 name!");
-            BattleShip.Player1 = Console.ReadLine();
+            var player1= Console.ReadLine();
 
-            while (BattleShip.Player1 .Length < 2 || BattleShip.Player1 .Length > 100)
+            while (player1 .Length < 2 || player1.Length > 100)
             {
 
                 Console.ForegroundColor = Color.Maroon;
-                System.Console.WriteLine($"Player name {BattleShip.Player1} is too short or too long! " +
+                System.Console.WriteLine($"Player name {player1} is too short or too long! " +
                                          $"Name length has to be between 2 to 100!");
                 Console.ForegroundColor = Color.Blue;
                 System.Console.WriteLine("Please enter Player 1 name!");
-                BattleShip.Player1  = Console.ReadLine();
+                player1  = Console.ReadLine();
             }
 
             System.Console.WriteLine("Please enter Player 2 name!");
-            BattleShip.Player2 = Console.ReadLine();
+            var player2 = Console.ReadLine();
 
-            while (BattleShip.Player2.Length < 2 || BattleShip.Player2.Length > 100)
+            while (player2.Length < 2 || player2.Length > 100)
             {
 
                 Console.ForegroundColor = Color.Maroon;
-                System.Console.WriteLine($"Player name {BattleShip.Player2} is too short or too long! " +
+                System.Console.WriteLine($"Player name {player2} is too short or too long! " +
                                          $"Name length has to be between 2 to 100!");
                 Console.ForegroundColor = Color.Blue;
                 System.Console.WriteLine("Please enter Player 2 name!");
-                BattleShip.Player2 = Console.ReadLine();
+                player2 = Console.ReadLine();
             }
-            while (BattleShip.Player1 == BattleShip.Player2)
+            while (player1 == player2)
             {
                 Console.ForegroundColor = Color.Maroon;
                 System.Console.WriteLine("Players name can't be same!");
                 Console.ForegroundColor = Color.Blue;
                 System.Console.WriteLine("Please enter Player 2 name!");
-                BattleShip.Player2= Console.ReadLine();
+                player2 = Console.ReadLine();
             }
+
+            return new Tuple<string, string>(player1, player2);
         }
 
-        public static void BoardSize()
+        static Tuple<int, int>  BoardSize()
         {
-            while (BattleShip.Width < 5 || BattleShip.Height > 25)
+            var width = 0;
+            var height = 0;
+            while (width < 5 || width > 25)
             {
                 Console.WriteLine("Please insert game board width between 5 to 25!");
                 var userChoice = Console.ReadLine();
                 if (int.TryParse(userChoice, out _))
                 {
-                    BattleShip.Width = Int32.Parse(userChoice);
-                    if (BattleShip.Width < 5 || BattleShip.Width > 25)
+                    width = Int32.Parse(userChoice);
+                    if (width < 5 || width > 25)
                     {
                         Console.ForegroundColor = Color.Maroon;
                         System.Console.WriteLine("Width not between allowed range!");
@@ -192,16 +178,17 @@ namespace ConsoleApp
                     Console.WriteLine("Incorrect width. Width has to be a number!");
                     Console.ForegroundColor = Color.Blue;
                 }
+
             }
 
-            while (BattleShip.Height < 5 || BattleShip.Height > 25)
+            while (height < 5 || height > 25)
             {
                 Console.WriteLine("Please insert game board height between 5 to 25!");
                 var userChoice = Console.ReadLine();
                 if (int.TryParse(userChoice, out _))
                 {
-                    BattleShip.Height = Int32.Parse(userChoice);
-                    if (BattleShip.Height < 5 || BattleShip.Height > 25)
+                    height = Int32.Parse(userChoice);
+                    if (height < 5 ||height > 25)
                     {
                         Console.ForegroundColor = Color.Maroon;
                         System.Console.WriteLine("Height not between allowed range!");
@@ -216,6 +203,8 @@ namespace ConsoleApp
                 }
             }
 
+            return new Tuple<int, int>(width, height);
+
         }
 
         static (int x, int y) GetMoveCordinates(BattleShip game)
@@ -225,27 +214,33 @@ namespace ConsoleApp
             var y = 26;
             var input = "";
 
-            while(x > BattleShip.Width -1 || y > BattleShip.Height-1 || input.Length < 2 || input.Length > 3){
+            while(x > game.GetWidth() -1 || y > game.GetHeight()-1 || input.Length < 2 || input.Length > 3){
                 Console.WriteLine("Upper left corner is (A 1)!");
-                Console.Write($"Give Y A-{Convert.ToChar(BattleShip.Height + 64)}, X 1-{BattleShip.Height}:");
+                Console.Write($"Give Y A-{Convert.ToChar(game.GetWidth() + 64)}, X 1-{game.GetHeight()}:");
                 var letters = string.Empty;
 
                 input = Console.ReadLine().Trim();
 
+                if (!String.IsNullOrWhiteSpace(input) && Char.IsLetter(input[0]) && Char.IsDigit(input[1]))
+                {
 
-                foreach (var t in input) {
-                    if (Char.IsNumber(t))
+
+                    foreach (var t in input)
                     {
-                        letters += t.ToString();
+                        if (Char.IsNumber(t))
+                        {
+                            letters += t.ToString();
+                        }
+                        else if (char.IsLetter(t))
+                        {
+                            y = char.ToUpper(input[0]) - 65;
+                        }
                     }
-                    else if (char.IsLetter(t))
-                    {
-                        y = char.ToUpper(input[0]) - 65;
-                    }
+
+                    x = int.Parse(letters) - 1;
                 }
-                x = int.Parse(letters) - 1;
 
-                if (input.Length > 3 || input.Length < 2 || x > BattleShip.Width -1 || y > BattleShip.Height-1)
+                if (input.Length > 3 || input.Length < 2 || x > game.GetWidth() -1 || y > game.GetHeight()-1)
                 {
                     Console.ForegroundColor = Color.Maroon;
                     System.Console.WriteLine("Input string was not in a correct format!");
@@ -257,9 +252,9 @@ namespace ConsoleApp
             return (x, y);
         }
 
-        static string LoadGameAction(BattleShip game)
+        static string LoadGameAction()
         {
-            var state = new GameState();
+            var game = new BattleShip();
             var files = System.IO.Directory.EnumerateFiles(".", "*.json").ToList();
             for (int i = 0; i < files.Count; i++)
             {
@@ -273,6 +268,7 @@ namespace ConsoleApp
 
             game.SetGameStateFromJsonString(jsonString);
 
+            Game(game);
             return "";
         }
 
