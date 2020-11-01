@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Net;
 using System.Text.Json;
+using Domain;
 using Console = Colorful.Console;
 
 namespace GameBrain
@@ -12,6 +13,9 @@ namespace GameBrain
     public class BattleShip
     {
         private bool _nextMoveByX = true;
+        private string _gameRule = null!;
+
+        private bool _canInsert = true;
         private CellState[,] _board1 = null!;
         private CellState[,] _board2 = null!;
         private int _width;
@@ -19,19 +23,37 @@ namespace GameBrain
         private string _player1 = null!;
         private string _player2 = null!;
         public bool NextMoveByX => _nextMoveByX;
-
-
-        public BattleShip(int width, int height, string player1, string player2)
+        public bool CanInsert
         {
-            _player1 = player1;
-            _player2 = player2;
+            get => _canInsert;
+            set => _canInsert = value;
+        }
+
+
+        public BattleShip(int width, int height, string player1, string player2, string gameRule)
+        {
+
             _width = width;
             _height = height;
-
+            _player1 = player1;
+            _player2 = player2;
+            _gameRule = gameRule;
         }
         public BattleShip()
         {
 
+        }
+        public string GetGameRule()
+        {
+            return _gameRule;
+        }
+        public CellState[,] GetBoard1()
+        {
+            return _board1;
+        }
+        public CellState[,] GetBoard2()
+        {
+            return _board2;
         }
         public string GetPlayer1()
         {
@@ -50,9 +72,9 @@ namespace GameBrain
             return _height;
         }
 
-
         public CellState[,] GetBoard(string player)
         {
+
             if (_board1 == null)
             {
                 _board1 = new CellState[_width, _height];
@@ -68,6 +90,42 @@ namespace GameBrain
 
         }
 
+        public bool InsertBoat(int x, int y, string playerName, int size, string direction)
+        {
+
+            var board = _board1;
+            if (playerName == _player2)
+            {
+                board = _board2;
+            }
+
+            if (direction == "R")
+            {
+                for (int i = x; i < x + size; i++)
+                {
+
+                    board[i, y] = CellState.Ship;
+
+                }
+            }
+            if (direction == "D")
+            {
+                for (int i = y; i < y + size; i++)
+                {
+
+                    board[x, i] = CellState.Ship;
+                }
+            }
+            else
+            {
+
+                board[x, y] = CellState.Ship;
+
+            }
+
+            return false;
+        }
+
         public bool MakeAMove(int x, int y, CellState[,] board)
         {
 
@@ -76,16 +134,18 @@ namespace GameBrain
 
                 if(_board2[x, y] == CellState.Empty)
                 {
-                   _board2[x, y] = CellState.X;
+
+                    _board2[x, y] = CellState.O;
                     _nextMoveByX = !_nextMoveByX;
                     return true;
+
                 }
             }
             else
             {
                 if(_board1[x, y] == CellState.Empty)
                 {
-                   _board1[x, y] = CellState.X;
+                   _board1[x, y] = CellState.O;
                     _nextMoveByX = !_nextMoveByX;
 
                     return true;

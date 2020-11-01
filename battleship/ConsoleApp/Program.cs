@@ -2,7 +2,10 @@
 using System.Drawing;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading;
 using BattleShipUi;
+using DAL;
+using Domain;
 using GameBrain;
 using MenuSystem;
 using Console = Colorful.Console;
@@ -12,14 +15,50 @@ namespace ConsoleApp
     class Program
     {
         static void Main(string[] args)
-
         {
+
+            // using (var db = new AppDbContext())
+            // {
+            //     foreach (var board in db.BoardStates!)
+            //     {
+            //         System.Console.WriteLine(board);
+            //     }
+            // }
+
+            // for (int j = 0; j < 100; j++)
+            // {
+            //     Console.Clear();
+            //
+            //     // steam
+            //     Console.Write("       . . . . o o o o o o", Color.LightGray);
+            //     for (int s = 0; s < j / 2; s++)
+            //     {
+            //         Console.Write(" o", Color.LightGray);
+            //     }
+            //     Console.WriteLine();
+            //
+            //     var margin = "".PadLeft(j);
+            //     Console.WriteLine(margin + "                 ____      o",    Color.DeepSkyBlue);
+            //     Console.WriteLine(margin + "                 |  |      o",    Color.DeepSkyBlue);
+            //     Console.WriteLine(margin + "      _____====__|OO|_n_n__]___   ", Color.DeepSkyBlue);
+            //     Console.WriteLine(margin + "      \\___[]__[]__[]__[]__[]__/ ", Color.DeepSkyBlue);
+            //     Console.WriteLine(margin + "      \\______________________/", Color.Blue);
+            //     Console.WriteLine("≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈" +
+            //                       "≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
+            //         Color.DarkBlue);
+            //
+            //     Thread.Sleep(150);
+            // }
+
+
 
             int red = 200;
             int green = 100;
             int blue = 255;
 
+
             Console.WriteAscii("BATTLESHIP", Color.FromArgb(red, green, blue));
+
 
             var menu2 = new Menu(2);
             menu2.AddMenuItem(new MenuItem("New game human vs human", "1", Parameters));
@@ -41,13 +80,24 @@ namespace ConsoleApp
 
         static string Parameters()
         {
+
+            var input = new UserInput();
+            var rules = new Rules();
+            var insert = new InsertingBoats();
+            var afterHit = new NextMoveAfterHit();
+
             var player1 = "";
             var player2 = "";
-            var width = 0;
-            var height = 0;
-            (player1, player2) = AskName();
-            (width, height) = BoardSize();
-            var game = new BattleShip(width, height, player1, player2);
+            // (player1, player2) = input.AskName();
+            player1 = "helen";
+            player2 = "lelen";
+            var (width, height) = input.BoardSize();
+
+            var gameRules = rules.GameRules();
+            // afterHit.NextMoveAfterHitRule();
+            // insert.InsertingBoat();
+            Console.Clear();
+            var game = new BattleShip(width, height, player1, player2, gameRules);
             Game(game);
 
             return "";
@@ -56,9 +106,13 @@ namespace ConsoleApp
 
         static string Game(BattleShip game)
         {
-
+            var boats = new PlaceTheBoats();
             var board1 = game.GetBoard(game.GetPlayer1());
             var board2 = game.GetBoard(game.GetPlayer2());
+
+            boats.BoatsLocation(game, game.GetPlayer1());
+            boats.BoatsLocation(game, game.GetPlayer2());
+
 
             var userChoice = "";
 
@@ -79,7 +133,7 @@ namespace ConsoleApp
                 board = board1;
             }
 
-            var (x, y) = GetMoveCordinates(game);
+            var (x, y) = MoveCoordinates.GetMoveCoordinates(game);
             Console.WriteLine();
             game.MakeAMove(x, y, board);
 
@@ -107,150 +161,11 @@ namespace ConsoleApp
         {
             var game = new BattleShip();
             Console.ForegroundColor = Color.Purple;
-            Console.SetCursorPosition( 5 * 2, Console.CursorTop);
+            Console.SetCursorPosition( 4, Console.CursorTop);
             System.Console.WriteLine($"{name.ToUpper()}'s board");
 
         }
 
-        static Tuple<string, string>  AskName()
-        {
-
-            System.Console.WriteLine("Please enter Player 1 name!");
-            var player1= Console.ReadLine();
-
-            while (player1 .Length < 2 || player1.Length > 100)
-            {
-
-                Console.ForegroundColor = Color.Maroon;
-                System.Console.WriteLine($"Player name {player1} is too short or too long! " +
-                                         $"Name length has to be between 2 to 100!");
-                Console.ForegroundColor = Color.Blue;
-                System.Console.WriteLine("Please enter Player 1 name!");
-                player1  = Console.ReadLine();
-            }
-
-            System.Console.WriteLine("Please enter Player 2 name!");
-            var player2 = Console.ReadLine();
-
-            while (player2.Length < 2 || player2.Length > 100)
-            {
-
-                Console.ForegroundColor = Color.Maroon;
-                System.Console.WriteLine($"Player name {player2} is too short or too long! " +
-                                         $"Name length has to be between 2 to 100!");
-                Console.ForegroundColor = Color.Blue;
-                System.Console.WriteLine("Please enter Player 2 name!");
-                player2 = Console.ReadLine();
-            }
-            while (player1 == player2)
-            {
-                Console.ForegroundColor = Color.Maroon;
-                System.Console.WriteLine("Players name can't be same!");
-                Console.ForegroundColor = Color.Blue;
-                System.Console.WriteLine("Please enter Player 2 name!");
-                player2 = Console.ReadLine();
-            }
-
-            return new Tuple<string, string>(player1, player2);
-        }
-
-        static Tuple<int, int>  BoardSize()
-        {
-            var width = 0;
-            var height = 0;
-            while (width < 5 || width > 25)
-            {
-                Console.WriteLine("Please insert game board width between 5 to 25!");
-                var userChoice = Console.ReadLine();
-                if (int.TryParse(userChoice, out _))
-                {
-                    width = Int32.Parse(userChoice);
-                    if (width < 5 || width > 25)
-                    {
-                        Console.ForegroundColor = Color.Maroon;
-                        System.Console.WriteLine("Width not between allowed range!");
-                        Console.ForegroundColor = Color.Blue;
-                    }
-                }
-                else
-                {
-                    Console.ForegroundColor = Color.Maroon;
-                    Console.WriteLine("Incorrect width. Width has to be a number!");
-                    Console.ForegroundColor = Color.Blue;
-                }
-
-            }
-
-            while (height < 5 || height > 25)
-            {
-                Console.WriteLine("Please insert game board height between 5 to 25!");
-                var userChoice = Console.ReadLine();
-                if (int.TryParse(userChoice, out _))
-                {
-                    height = Int32.Parse(userChoice);
-                    if (height < 5 ||height > 25)
-                    {
-                        Console.ForegroundColor = Color.Maroon;
-                        System.Console.WriteLine("Height not between allowed range!");
-                        Console.ForegroundColor = Color.Blue;
-                    }
-                }
-                else
-                {
-                    Console.ForegroundColor = Color.Maroon;
-                    Console.WriteLine("Incorrect height. Height has to be a number!");
-                    Console.ForegroundColor = Color.Blue;
-                }
-            }
-
-            return new Tuple<int, int>(width, height);
-
-        }
-
-        static (int x, int y) GetMoveCordinates(BattleShip game)
-        {
-
-            var x = 26;
-            var y = 26;
-            var input = "";
-
-            while(x > game.GetWidth() -1 || y > game.GetHeight()-1 || input.Length < 2 || input.Length > 3){
-                Console.WriteLine("Upper left corner is (A 1)!");
-                Console.Write($"Give Y A-{Convert.ToChar(game.GetWidth() + 64)}, X 1-{game.GetHeight()}:");
-                var letters = string.Empty;
-
-                input = Console.ReadLine().Trim();
-
-                if (!String.IsNullOrWhiteSpace(input) && Char.IsLetter(input[0]) && Char.IsDigit(input[1]))
-                {
-
-
-                    foreach (var t in input)
-                    {
-                        if (Char.IsNumber(t))
-                        {
-                            letters += t.ToString();
-                        }
-                        else if (char.IsLetter(t))
-                        {
-                            y = char.ToUpper(input[0]) - 65;
-                        }
-                    }
-
-                    x = int.Parse(letters) - 1;
-                }
-
-                if (input.Length > 3 || input.Length < 2 || x > game.GetWidth() -1 || y > game.GetHeight()-1)
-                {
-                    Console.ForegroundColor = Color.Maroon;
-                    System.Console.WriteLine("Input string was not in a correct format!");
-                    Console.ForegroundColor = Color.Blue;
-
-                }
-            }
-
-            return (x, y);
-        }
 
         static string LoadGameAction()
         {

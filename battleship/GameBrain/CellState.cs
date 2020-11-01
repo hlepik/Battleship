@@ -7,6 +7,7 @@ namespace GameBrain
         Empty,
         X,
         O,
+        Ship
 
     }
 

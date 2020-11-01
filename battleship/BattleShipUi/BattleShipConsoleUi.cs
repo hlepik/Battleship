@@ -15,7 +15,6 @@ namespace BattleShipUi
             var width = board.GetUpperBound(0) + 1; // x
             var height = board.GetUpperBound(1) + 1; // y
 
-
             System.Console.WriteLine();
             for (int colIndex = 0; colIndex < width; colIndex++)
             {
@@ -33,6 +32,8 @@ namespace BattleShipUi
                 }
 
                 Console.ForegroundColor = Color.Blue;
+
+
             }
             Console.WriteLine();
 
@@ -44,6 +45,8 @@ namespace BattleShipUi
                     System.Console.Write("  ");
                 }
                 Console.Write("+•••+");
+
+
             }
             Console.WriteLine();
             char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
@@ -70,6 +73,7 @@ namespace BattleShipUi
                         System.Console.Write("  ");
                     }
                     Console.Write("+•••+");
+
                 }
                 Console.WriteLine();
 
@@ -83,7 +87,9 @@ namespace BattleShipUi
             switch (cellState)
             {
                 case CellState.Empty: return " ";
+                case CellState.Ship: return "S";
                 case CellState.X: return "X";
+                case CellState.O: return "O";
             }
 
             return "-";

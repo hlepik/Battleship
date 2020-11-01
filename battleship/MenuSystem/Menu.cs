@@ -114,8 +114,8 @@ namespace MenuSystem
                 Console.ForegroundColor = Color.Blue;
                 Console.WriteLine("------------------------");
 
+                Console.ForegroundColor = Color.Aqua;
                 Console.Write(">");
-
                 userChoice = Console.ReadLine()?.Trim().ToUpper() ?? "";
 
                 if (_menuItemExit.UserChoice != userChoice && _menuItemReturnMain?.UserChoice != userChoice
@@ -135,7 +135,12 @@ namespace MenuSystem
                 {
                     if (_menuLevel == 0)
                     {
-                        Console.WriteLine("Closing down......");
+                        int red = 200;
+                        int green = 100;
+                        int blue = 255;
+
+                        Console.WriteAscii("CLOSING DOWN !!!", Color.FromArgb(red, green, blue));
+                        // Console.WriteLine("Closing down......");
                     }
 
                     break;
