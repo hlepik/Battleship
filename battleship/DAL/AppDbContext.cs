@@ -39,7 +39,6 @@ namespace DAL
                     MultipleActiveResultSets=true;
                     "
                 );
-            //.UseSqlite("Data Source=/Users/akaver/Development/!/app.db");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -49,6 +48,8 @@ namespace DAL
                 .HasOne(game => game.PlayerA).WithOne()
                 .HasForeignKey<Game>(g => g.PlayerAId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+          // remove the cascade delete
             modelBuilder.Entity<Game>()
                 .HasOne(game => game.PlayerB).WithOne()
                 .HasForeignKey<Game>(g => g.PlayerBId)

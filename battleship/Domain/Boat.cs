@@ -15,8 +15,9 @@ namespace Domain
         [MaxLength(32)]
         public string Name { get; set; } = null!;
 
+        public int LifeCount { get; set; }
+
         public ICollection<GameOptionBoat> GameOptionBoats { get; set; } = null!;
-
-
+        public ICollection<BoardCells> BoardCells { get; set; } = null!;
     }
 }

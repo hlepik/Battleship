@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domain
@@ -12,10 +13,13 @@ namespace Domain
 
         [MaxLength(32)]
         public string Name { get; set; } = null!;
+        public string Direction { get; set; } = null!;
 
         public bool IsSunken { get; set; }
 
         public int PlayerId { get; set; }
         public Player Player { get; set; } = null!;
+
+
     }
 }

@@ -6,12 +6,12 @@ namespace BattleShipUi
 {
     public class Rules
     {
-        public string GameRules()
+        public EBoatsCanTouch GameRules()
         {
+            var output = EBoatsCanTouch.No;
             var input = "";
             do
             {
-                Console.Clear();
                 Console.ForegroundColor = Color.Teal;
                 Console.WriteLine("Please select the game rules:" + Environment.NewLine +
                                   "A - Ships can't be touching" + Environment.NewLine +
@@ -20,6 +20,7 @@ namespace BattleShipUi
 
                 Console.ForegroundColor = Color.Aqua;
                 input = Console.ReadLine().Trim().ToUpper();
+                Console.Clear();
                 if (input != "A" && input != "B" && input != "C")
                 {
                     Console.ForegroundColor = Color.Maroon;
@@ -27,15 +28,17 @@ namespace BattleShipUi
                     Console.ForegroundColor = Color.Blue;
                 }
 
+
             } while (input != "A" && input != "B" && input != "C");
 
-            input = input switch
+            output = input switch
             {
-                "A" => EBoatsCanTouch.No.ToString(),
-                "B" => EBoatsCanTouch.Corner.ToString(),
-                "C" => EBoatsCanTouch.Yes.ToString()
+                "B" => EBoatsCanTouch.Corner,
+                "C" => EBoatsCanTouch.Yes,
+                _ => output
             };
-            return input;
+
+            return output;
         }
 
     }

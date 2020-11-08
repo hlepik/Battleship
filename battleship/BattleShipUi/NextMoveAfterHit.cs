@@ -1,25 +1,42 @@
 using System;
+using System.Drawing;
 using System.Globalization;
-using Domain11.Enums;
+using Domain.Enums;
+using Console = Colorful.Console;
 
 namespace BattleShipUi
 {
     public class NextMoveAfterHit
     {
-        public void NextMoveAfterHitRule()
+        public  ENextMoveAfterHit NextMoveAfterHitRule()
         {
-            Console.WriteLine("Can player make a next move after hit? "+ Environment.NewLine +
-                              "Y - Yes" + Environment.NewLine +
-                              "N - No");
-
-            var input = Console.ReadLine().Trim().ToUpper();
-
-            input = input switch
+            var nextMove = ENextMoveAfterHit.SamePlayer;
+            var input = "";
+            do
             {
-                "Y" => ENextMoveAfterHit.SamePlayer.ToString(),
-                "N" => ENextMoveAfterHit.OtherPlayer.ToString(),
+                Console.WriteLine("Can player make a next move after hit? " + Environment.NewLine +
+                                  "Y - Yes" + Environment.NewLine +
+                                  "N - No");
+
+                input = Console.ReadLine().Trim().ToUpper();
+
+                if (input != "Y" && input != "N")
+                {
+                    Console.ForegroundColor = Color.Maroon;
+                    Console.WriteLine("Invalid input!");
+                    Console.ForegroundColor = Color.Blue;
+                }
+            } while (input != "Y" && input != "N");
+
+            nextMove = input switch
+            {
+                "Y" => ENextMoveAfterHit.SamePlayer,
+                "N" => ENextMoveAfterHit.OtherPlayer,
+                _ => nextMove
             };
-            }
+
+            return nextMove;
+        }
 
     }
 }

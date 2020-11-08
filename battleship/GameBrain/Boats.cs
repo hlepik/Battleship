@@ -1,4 +1,3 @@
-using System.IO;
 
 namespace GameBrain
 {
@@ -8,8 +7,8 @@ namespace GameBrain
         {
             Name = "Patrol";
             Width = 1;
-        }
 
+        }
     }
     public class Cruiser : Ship
     {
@@ -26,6 +25,7 @@ namespace GameBrain
         {
             Name = "Submarine";
             Width = 3;
+
         }
 
     }
@@ -35,6 +35,7 @@ namespace GameBrain
         {
             Name = "Battleship";
             Width = 4;
+
         }
 
     }
@@ -44,6 +45,7 @@ namespace GameBrain
         {
             Name = "Carrier";
             Width = 5;
+
         }
     }
     public class  MegaSubmarine : Ship
@@ -52,22 +54,28 @@ namespace GameBrain
         {
             Name = "MegaSubmarine";
             Width = 6;
+
         }
     }
-    public class  MegaBattleship : Ship
+
+    public class MegaBattleship : Ship
     {
-        public  MegaBattleship()
+        public MegaBattleship()
         {
             Name = "MegaBattleship";
             Width = 7;
+
         }
     }
-    public class   MegaCarrier : Ship
+
+    public class MegaCarrier : Ship
     {
-        public   MegaCarrier()
+        public MegaCarrier()
         {
-            Name = " MegaCarrier";
-            Width = 7;
+            Name = "MegaCarrier";
+            Width = 8;
+
         }
     }
 }
+

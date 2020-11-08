@@ -5,10 +5,6 @@ namespace GameBrain
 {
     public class BoatCount
     {
-
-
-        public Ship? Cruiser { get; set; }
-
         public List<Ship> BoatsCount(BattleShip game)
         {
 
@@ -18,7 +14,6 @@ namespace GameBrain
             boats.Add(new Patrol());
             boats.Add(new Patrol());
             boats.Add(new Cruiser());
-
 
             if (size >= 3)
             {

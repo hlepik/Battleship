@@ -1,4 +1,4 @@
-namespace Domain11
+namespace Domain
 {
     public enum EPlayerType
     {

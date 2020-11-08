@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using Domain;
 using GameBrain;
 using Console = Colorful.Console;
 
@@ -13,19 +14,21 @@ namespace BattleShipUi
         {
 
             var player1 = "";
-            var player2 = "";
+            var player2 = "AI";
 
             while (player1.Length < 2 || player1.Length > 100)
             {
                 Console.ForegroundColor = Color.Blue;
                 var name = "Please enter Player 1 name: ";
-                for (int i = 0; i < name.Length; i++) {
+                for (int i = 0; i < name.Length; i++)
+                {
                     Console.Write(name[i]);
 
-                    System.Threading.Thread.Sleep(80);
+                    System.Threading.Thread.Sleep(60);
                 }
+
                 Console.ForegroundColor = Color.Aqua;
-                player1  = Console.ReadLine();
+                player1 = Console.ReadLine().ToUpper();
                 Console.ForegroundColor = Color.Blue;
 
                 if (player1.Length < 2 || player1.Length > 100)
@@ -35,19 +38,23 @@ namespace BattleShipUi
                                              $"Name length has to be between 2 to 100!");
                     Console.ForegroundColor = Color.Blue;
                 }
-            }
+                if (BattleShip.Ai) return new Tuple<string, string>(player1, player2);
+                player2 = "";
 
-            while (player2.Length < 2 || player2.Length > 100)
+
+            while (player2.Length < 2  || player2.Length > 100)
             {
                 Console.ForegroundColor = Color.Blue;
-                var name = "Please enter Player 2 name: ";
-                for (int i = 0; i < name.Length; i++) {
+                name = "Please enter Player 2 name: ";
+                for (int i = 0; i < name.Length; i++)
+                {
                     Console.Write(name[i]);
 
-                    System.Threading.Thread.Sleep(80);
+                    System.Threading.Thread.Sleep(60);
                 }
+
                 Console.ForegroundColor = Color.Aqua;
-                player2  = Console.ReadLine();
+                player2 = Console.ReadLine().ToUpper();
                 Console.ForegroundColor = Color.Blue;
 
                 if (player2.Length < 2 || player2.Length > 100)
@@ -58,19 +65,23 @@ namespace BattleShipUi
                     Console.ForegroundColor = Color.Blue;
                 }
             }
+
             while (player1 == player2)
             {
                 Console.ForegroundColor = Color.Maroon;
-                var name = "Players name can't be same!";
+                name = "Players name can't be same!";
                 Console.ForegroundColor = Color.Blue;
-                for (int i = 0; i < name.Length; i++) {
+                for (int i = 0; i < name.Length; i++)
+                {
                     Console.Write(name[i]);
 
-                    System.Threading.Thread.Sleep(80);
+                    System.Threading.Thread.Sleep(60);
                 }
+
                 Console.ForegroundColor = Color.Aqua;
-                player2 = Console.ReadLine();
+                player2 = Console.ReadLine().ToUpper();
                 Console.ForegroundColor = Color.Blue;
+                }
             }
 
             return new Tuple<string, string>(player1, player2);
@@ -142,6 +153,14 @@ namespace BattleShipUi
             }
 
             return new Tuple<int, int>(width, height);
+
+        }
+
+        public static void GetTableName(string name)
+        {
+            Console.ForegroundColor = Color.Purple;
+            Console.SetCursorPosition( 4, Console.CursorTop);
+            System.Console.WriteLine($"{name.ToUpper()}'s board");
 
         }
 

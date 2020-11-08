@@ -13,105 +13,93 @@ namespace BattleShipUi
         {
             var place = new CanInsertBoat();
             var boats = new BoatCount();
+            game.CanInsert = true;
 
             Console.Clear();
-            System.Console.WriteLine($"{playerName} please insert your ships!");
+            // if (game.WhoWillPlaceTheShips == "P")
+            // {
+                System.Console.WriteLine($"{playerName} please insert your ships!");
+            // }
+
             var allBoats = boats.BoatsCount(game).OrderBy(x => x.Width)
                 .Reverse();
             foreach (var each in allBoats)
             {
-                // var input = "";
-                var x = 26;
-                var y = 26;
+                var x = 0;
+                var y = 0;
                 var direction = "";
 
-                if (playerName == game.GetPlayer1())
+
+                var board = game.GetBoard(playerName);
+                BattleShipConsoleUi.DrawBoard(board);
+
+                if (game.WhoWillPlaceTheShips == "A" || (playerName == "AI"))
                 {
-                    var board1 = game.GetBoard(game.GetPlayer1());
-                    BattleShipConsoleUi.DrawBoard(board1);
-                }
-                else
-                {
-                    var board2 = game.GetBoard(game.GetPlayer2());
-                    BattleShipConsoleUi.DrawBoard(board2);
-                }
-
-
-                // do
-                // {
-
-                do
-                {
-                    game.CanInsert = true;
-                    Console.ForegroundColor = Color.Aqua;
-                    System.Console.Write($"Enter {each.Name} size={each.Width} location: ");
-                    // input = Console.ReadLine().Trim();
-                    // var letters = string.Empty;
-                    (x, y) = MoveCoordinates.GetMoveCoordinates(game);
-
-                    // if (!String.IsNullOrWhiteSpace(input) && input.Length > 1 && input.Length <= 3 && Char.IsLetter(input[0]) && Char.IsDigit(input[1]))
-                    // {
-                    //     foreach (var t in input)
-                    //     {
-                    //         if (Char.IsNumber(t))
-                    //         {
-                    //             letters += t.ToString();
-                    //         }
-                    //         else if (char.IsLetter(t))
-                    //         {
-                    //             y = char.ToUpper(input[0]) - 65;
-                    //         }
-                    //     }
-                    //
-                    //     x = int.Parse(letters) - 1;
-                    // }
-                    // else if (input.Length > 3 || input.Length < 2 || x > game.GetWidth() - 1 || y > game.GetHeight() - 1)
-                    // {
-                    //     Console.ForegroundColor = Color.Maroon;
-                    //     System.Console.WriteLine("Input was not in a correct format!");
-                    //     Console.ForegroundColor = Color.Blue;
-                    //
-                    // }
-
-                    // } while (x > game.GetWidth() && y > game.GetHeight());
-
-                    if (each.Width > 1)
+                    do
                     {
-
-                        do
+                        Random random = new Random();
+                        x = random.Next(0, game.GetWidth());
+                        y = random.Next(0, game.GetHeight());
+                        var num = random.Next(1, 2);
+                        if (num == 1 )
                         {
-                            System.Console.Write($"Enter {each.Name} direction R = right, D = down: ");
-                            direction = Console.ReadLine().Trim().ToUpper();
-                            if (direction != "R" && direction != "D")
+                            direction = "R";
+                        }
+                        else
+                        {
+                            direction = "D";
+                        }
+
+                        place.BoatLocationCheck(game, x, y, each.Width, direction, playerName);
+
+                    }while (x > game.GetWidth() - 1 || y > game.GetHeight() - 1 || !game.CanInsert);
+
+                }
+
+                if (game.WhoWillPlaceTheShips == "M" && playerName != "AI")
+                {
+
+                    do
+                    {
+                        game.CanInsert = true;
+                        Console.ForegroundColor = Color.Aqua;
+                        System.Console.Write($"Enter {each.Name} size={each.Width} location: ");
+                        (x, y) = MoveCoordinates.GetMoveCoordinates(game);
+
+                        if (each.Width > 1 && x < game.GetWidth() && y < game.GetHeight() )
+                        {
+
+                            do
                             {
-                                Console.ForegroundColor = Color.Maroon;
-                                System.Console.WriteLine("Invalid input!");
-                                Console.ForegroundColor = Color.Blue;
+                                System.Console.Write($"Enter {each.Width} direction R = right, D = down: ");
+                                direction = Console.ReadLine().Trim().ToUpper();
+                                if (direction != "R" && direction != "D")
+                                {
+                                    Console.ForegroundColor = Color.Maroon;
+                                    System.Console.WriteLine("Invalid input!");
+                                    Console.ForegroundColor = Color.Blue;
+                                }
 
-                            }
 
-                        } while (direction != "R" && direction != "D");
+                            } while (direction != "R" && direction != "D");
 
-                    }
+                        }
 
-                    if (x <= game.GetWidth() - 1 || y <= game.GetHeight() - 1)
-                    {
-                        place.GameAPlacement(game, x, y, each.Width, direction, playerName);
+                        if (x < game.GetWidth() || y < game.GetHeight())
+                        {
+                            place.BoatLocationCheck(game, x, y, each.Width, direction, playerName);
 
-                    }
+                        }
 
-                    if (!game.CanInsert)
-                    {
+                        if (game.CanInsert) continue;
                         Console.ForegroundColor = Color.Maroon;
                         System.Console.WriteLine("You can't place your ship here!");
                         Console.ForegroundColor = Color.Blue;
-                    }
 
-                } while (x > game.GetWidth() - 1 || y > game.GetHeight() - 1|| !game.CanInsert);
+                    } while (x > game.GetWidth() - 1 || y > game.GetHeight() - 1 || !game.CanInsert);
+                }
 
-
-                game.InsertBoat(x, y, playerName, each.Width, direction);
-
+                game.InsertBoat(x, y, playerName, each.Width, direction, each.Name);
             }
 
             return "";

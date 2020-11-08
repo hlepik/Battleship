@@ -1,4 +1,4 @@
-namespace Domain11.Enums
+namespace Domain.Enums
 {
 
     //who has right for next move after successful move
