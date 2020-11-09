@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using DAL;
 using Domain;
 using Domain.Enums;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using static GameBrain.CellState;
+using Microsoft.EntityFrameworkCore;
 using Console = Colorful.Console;
 
 namespace GameBrain
@@ -16,25 +14,26 @@ namespace GameBrain
         public static bool GameIsOver { get; set; }
         private bool _canInsert;
         public int ShipId { get; set; } = 1;
-        public static EPlayerType PlayerType { get; set; }
+        public  EPlayerType PlayerType { get; set; }
         private bool _nextMoveByX = true;
-        private EBoatsCanTouch _gameRule;
-        private CellState[,] _board1 = null!;
-        private CellState[,] _board2 = null!;
+        public EBoatsCanTouch GameRule;
+        public CellState[,] Board1  { get; set; } = default! ;
+        public CellState[,] Board2  { get; set; } = default!;
+
         public static bool Ai { get; set; }
-        public static bool AiHit { get; set; }
+        public bool AiHit { get; set; }
 
         public List<Ship> Player1Ships { get; set; } = new List<Ship>();
         public List<Ship> Player2Ships { get; set; } = new List<Ship>();
 
-        private int _width;
-        private int _height;
-        private string _player1 = null!;
-        private string _player2 = null!;
+        public int Width;
+        public int Height;
+        public string Player1 = null!;
+        public string Player2 = null!;
 
 
         public string WhoWillPlaceTheShips { get; set; } = null!;
-        public static ENextMoveAfterHit NextMove { get; set; }
+        public ENextMoveAfterHit NextMove { get; set; }
 
         public bool NextMoveByX
         {
@@ -51,11 +50,11 @@ namespace GameBrain
         public BattleShip(int width, int height, string player1, string player2, EBoatsCanTouch gameRule)
         {
 
-            _width = width;
-            _height = height;
-            _player1 = player1;
-            _player2 = player2;
-            _gameRule = gameRule;
+            Width = width;
+            Height = height;
+            Player1 = player1;
+            Player2 = player2;
+            GameRule = gameRule;
         }
 
         public BattleShip()
@@ -63,57 +62,30 @@ namespace GameBrain
 
         }
 
-        public EBoatsCanTouch GetGameRule()
-        {
-            return _gameRule;
-        }
-
-        public CellState[,] GetBoard1()
-        {
-            return _board1;
-        }
-
-        public CellState[,] GetBoard2()
-        {
-            return _board2;
-        }
-
-        public string GetPlayer1()
-        {
-            return _player1;
-        }
-
-        public string GetPlayer2()
-        {
-            return _player2;
-        }
-
-        public int GetWidth()
-        {
-            return _width;
-        }
-
-        public int GetHeight()
-        {
-            return _height;
-        }
-
-
         public CellState[,] GetBoard(string player)
         {
 
-            if (_board1 == null)
+            if (Board1 == null)
             {
-                _board1 = new CellState[_width, _height];
-                _board2 = new CellState[_width, _height];
+                Board1 = new CellState[Width, Height];
+                Board2 = new CellState[Width, Height];
+
+                for (var row = 0; row < Width; row++)
+                {
+                    for (var col = 0; col < Height; col++)
+                    {
+                        Board1[row, col] = new CellState();
+                        Board2[row, col] = new CellState();
+                    }
+                }
             }
 
-            if (player == _player1)
+            if (player == Player1)
             {
-                return _board1;
+                return Board1;
             }
 
-            return _board2;
+            return Board2;
 
         }
 
@@ -121,188 +93,148 @@ namespace GameBrain
         public bool InsertBoat(int x, int y, string playerName, int size, string direction, string name)
         {
 
-            var boardState = new BoardState
-            {
-                Board = new BoardSquareState[_width][]
-            };
-            for (int i = 0; i < _width; i++)
-            {
-                boardState.Board[i] = new BoardSquareState[_width];
-            }
-
             var ships = Player1Ships;
-            List<int[]> positions = new List<int[]>();
-            int[] coordinates = new int[] { };
-            var ship = new Ship();
             var shipId = ShipId;
 
-            var board = _board1;
-            if (playerName == _player2)
+            var board = Board1;
+            if (playerName == Player2)
             {
-
                 ships = Player2Ships;
-                board = _board2;
+                board = Board2;
             }
 
             if (direction == "R")
             {
                 for (int i = x; i < x + size; i++)
                 {
-
-                    coordinates = new int[] {i, y};
-                    board[i, y] = CellState.Ship;
-
-                    shipId = ShipId;
-
-                    positions.Add(coordinates);
+                    board[i, y].Empty = false;
+                    board[i, y].Ship = true;
+                    board[i, y].ShipId = ShipId;
                 }
-
-                ships.Add(new Ship(name, size, positions, direction, shipId));
+                ships.Add(new Ship(name, size, direction, shipId));
                 ShipId += 1;
             }
             else if (direction == "D")
             {
                 for (int i = y; i < y + size; i++)
                 {
+                    board[x, i].Empty = false;
+                    board[x, i].Ship = true;
+                    board[x, i].ShipId = ShipId;
 
-                    coordinates = new int[] {x, i};
-                    board[x, i] = CellState.Ship;
-                    positions.Add(coordinates);
                 }
 
-                ships.Add(new Ship(name, size, positions, direction,  shipId));
+                ships.Add(new Ship(name, size, direction, shipId));
+
                 ShipId += 1;
             }
             else
             {
+                board[x, y].Empty = false;
+                board[x, y].Ship = true;
+                board[x, y].ShipId = ShipId;
 
-                coordinates = new int[] {x, y};
-                board[x, y] = CellState.Ship;
-
-                positions.Add(coordinates);
-                ships.Add(new Ship(name, size, positions, direction, shipId));
+                ships.Add(new Ship(name, size, direction, shipId));
                 ShipId += 1;
             }
 
             return false;
         }
 
-
-
         public string MakeAMove(BattleShip game, int x, int y, CellState[,] board)
         {
             var output = "";
-            if (board == _board1)
+
+            if (board == Board1)
             {
 
-                if (_board2[x, y] == Empty)
+                if (Board2[x, y].Ship)
                 {
-                    _board2[x, y] = O;
-                    _nextMoveByX = !_nextMoveByX;
-                    output = "You missed!";
-                }
-
-                if (_board2[x, y] == CellState.Ship)
-                {
-                    _board2[x, y] = X;
+                    Board2[x, y].Ship = false;
+                    Board2[x, y].Bomb = true;
                     output = BoardAfterHit(game, x, y);
 
+                }
+                else if (Board2[x, y].Empty)
+                {
+                    Board2[x, y].Empty = false;
+                    Board2[x, y].Miss = true;
+                    _nextMoveByX = !_nextMoveByX;
+                    output = "You missed!";
                 }
             }
             else
             {
-                if (_board1[x, y] == Empty)
+                if (Board1[x, y].Ship)
                 {
-                    _board1[x, y] = O;
+                    Board1[x, y].Ship = false;
+                    Board1[x, y].Bomb = true;
+
+                    output = BoardAfterHit(game, x, y);
+                }
+                else if (Board1[x, y].Empty)
+                {
+                    Board1[x, y].Empty = false;
+                    Board1[x, y].Miss = true;
                     _nextMoveByX = !_nextMoveByX;
                     output = "You missed!";
                 }
 
-                if (_board1[x, y] == CellState.Ship)
-                {
-                    _board1[x, y] = X;
 
-                    output = BoardAfterHit(game, x, y);
-                }
             }
 
             return output;
         }
 
-        public int GetBoatId(string playerName, int x, int y)
-        {
-            var boat = new Ship();
-            int[] coordinates = new int[] {x, y};
-            var shipList = Player1Ships;
-            var shipId = 0;
-            if (playerName == _player2)
-            {
-                shipList = Player2Ships;
-            }
-
-            var ship = shipList
-                .Where(d => d.AllPositions.Any(c => c.SequenceEqual(coordinates)));
-            foreach (var each in ship)
-            {
-                shipId = boat.ShipId;
-            }
-
-            return shipId;
-        }
-
         public string BoardAfterHit(BattleShip game, int x, int y)
         {
-            int[] coordinates = new int[] {x, y};
 
-
+            var ship = Player1Ships;
             var insert = new CanInsertBoat();
             var output = "";
-            var player = _player1;
-
-
-            var ship = Player1Ships
-                .Where(d => d.AllPositions.Any(c => c.SequenceEqual(coordinates)));
-
+            var player = Player1;
+            var board = Board1;
             if (NextMoveByX)
             {
-                ship = Player2Ships
-                    .Where(d => d.AllPositions.Any(c => c.SequenceEqual(coordinates)));
-                player = _player2;
+                player = Player2;
+                board = Board2;
+                ship = Player2Ships;
             }
 
+            var id = board[x, y].ShipId;
 
             foreach (var each in ship)
             {
 
-                if (each.Width > 1)
+                if (each.ShipId == id)
                 {
-                    output = "Hit!";
-                    each.Width -= 1;
-                    if (Ai && !NextMoveByX)
+
+                    if (each.LifeCount > 1)
                     {
-                        AiHit = true;
+                        output = "Hit!";
+                        each.LifeCount -= 1;
+
+                        if (Ai && !NextMoveByX)
+                        {
+                            AiHit = true;
+                        }
+                    }
+                    else
+                    {
+                        output = "Ship has been destroyed!";
+                        each.IsSunken = true;
+                        insert.AroundShip = true;
+
+                        if (Ai && !NextMoveByX)
+                        {
+                            AiHit = false;
+                        }
+
+                        insert.BoatLocationCheck(game, x, y, each.Width, each.Direction, player);
+                        GameOver();
                     }
 
                 }
-                else
-                {
-                    output = "Ship has been destroyed!";
-                    each.IsSunken = true;
-                    insert.AroundShip = true;
-                    var position =each.AllPositions[0];
-                    var length = each.AllPositions.Count;
-
-                    if (Ai && !NextMoveByX)
-                    {
-                        AiHit = false;
-                    }
-
-                    x = position[0];
-                    y = position[1];
-                    insert.BoatLocationCheck(game, x, y, length, each.Direction, player);
-                    GameOver();
-                }
-
 
                 if (ENextMoveAfterHit.OtherPlayer == NextMove)
                 {
@@ -319,12 +251,12 @@ namespace GameBrain
         {
 
             var count = 0;
-            var player = _player2;
+            var player = Player2;
             var check = Player1Ships;
             if (NextMoveByX)
             {
-                player = _player1;;
                 check = Player2Ships;
+                player = Player1;;
             }
             foreach (var each in check)
             {
@@ -348,18 +280,28 @@ namespace GameBrain
         public string GetSerializedGameState(CellState[,] board)
         {
 
-            var serializedBoard = new CellState[_width][];
-
-            for (var i = 0; i < board.Length; i++)
+            var state = new GameState
             {
-                serializedBoard [i] = new CellState[_height];
+                NextMoveByX = _nextMoveByX,
+                Width = Width,
+                Height = Height,
+
+            };
+
+            state.Board1 = new CellState[state.Width ][];
+
+            for (var i = 0; i < state.Board1.Length; i++)
+            {
+                state.Board1[i] = new CellState[state.Height];
             }
 
-            for (var x = 0; x < _width; x++)
+
+            for (var x = 0; x < state.Width; x++)
             {
-                for (var y = 0; y < _height; y++)
+                for (var y = 0; y < state.Height; y++)
                 {
-                    serializedBoard [x][y] = board[x, y];
+                    state.Board1[x][y] = board[x, y];
+
                 }
             }
 
@@ -367,228 +309,113 @@ namespace GameBrain
             {
                 WriteIndented = true
             };
-            return JsonSerializer.Serialize( serializedBoard , jsonOptions);
+            return JsonSerializer.Serialize(state, jsonOptions);
 
         }
 
-        // public void SetGameStateFromJsonString(string jsonString)
-        // {
-        //     var state = JsonSerializer.Deserialize<GameState>(jsonString);
-        //
-        //     // restore actual state from deserialized state
-        //     _player1 = state.PlayerFirst;
-        //     _player2 = state.PlayerSecond;
-        //     _nextMoveByX = state.NextMoveByX;
-        //     _board1 =  new CellState[state.Width, state.Height];
-        //     _board2 =  new CellState[state.Width, state.Height];
-        //     _width = state.Width;
-        //     _height = state.Height;
-        //
-        //     for (var x = 0; x < state.Width; x++)
-        //     {
-        //         for (var y = 0; y < state.Height; y++)
-        //         {
-        //             _board1[x, y] = state.Board1[x][y];
-        //             _board2[x, y] = state.Board2[x][y];
-        //         }
-        //     }
-        //
-        // }
 
-        public void SHipId()
-        {
-            var boardState = new BoardState();
-            var player = "";
-            var hasBomb = false;
-            var shipId = 0;
-            var board = _board2;
-            if (_nextMoveByX)
-            {
-                player = _player1;
-                board = _board1;
-            }
-            else
-            {
-                player = _player2;
-            }
-
-            for (int i = 0; i < _width; i++)
-            {
-                for (int j = 0; j < _height; j++)
-                {
-                    if (board[i, j] == CellState.Ship)
-                    {
-                        shipId = GetBoatId(player, i, j);
-                    }
-
-                    if (board[i, j] == X)
-                    {
-                        hasBomb = true;
-                    }
-                    boardState.Board[i][j] = new BoardSquareState()
-                    {
-                        BoatId = shipId,
-                        Bomb = hasBomb
-                    };
-
-                }
-            }
-        }
-
-        public void SaveGameToDb()
-        {
-
-            using var db = new AppDbContext();
-            // db.Database.Migrate();
+        public string SaveGameToDb()
+        {using var db = new AppDbContext();
+            db.Database.Migrate();
 
             var playerA = new Player()
             {
-                Name = _player1,
+                Name = Player1,
                 EPlayerType = PlayerType,
-                Game = new Game(),
-                GameBoats = new List<GameBoat>(),
-                PlayerBoardStates = new List<PlayerBoardState>()
             };
+
+            db.Players.Add(playerA);
+
 
             var playerB = new Player()
             {
-                Name = _player2,
+                Name = Player2,
                 EPlayerType = PlayerType,
-                Game = new Game(),
-                GameBoats = new List<GameBoat>(),
-                PlayerBoardStates = new List<PlayerBoardState>()
             };
+            db.Players.Add(playerB);
+            db.SaveChanges();
 
+            var boat = new Boat();
 
-            var game = new Game()
+            foreach (var each in Player1Ships)
             {
-                Description = DateTime.Now.ToLongDateString()
-            };
-            game.PlayerA = playerA;
-            game.PlayerB = playerB;
-            db.Players.Add(game.PlayerA);
-            db.Players.Add(game.PlayerB);
+                boat = new Boat()
+                {
+                    Name = each.Name,
+                    Size = each.Width
+                };
+            }
+            db.Boats.Add(boat);
 
             var gameOption = new GameOption()
             {
                 Name = "Battleship",
-                BoardWidth = _width,
-                BoardHeight = _height,
-                EBoatsCanTouch = _gameRule,
+                BoardWidth = Width,
+                BoardHeight = Height,
+                EBoatsCanTouch = GameRule,
                 ENextMoveAfterHit = NextMove,
-                Games = new List<Game>(),
-                GameOptionBoats = new List<GameOptionBoat>()
+
 
             };
-            game.GameOption = gameOption;
-            db.GameOptions.Add(game.GameOption);
+            db.GameOptions.Add(gameOption);
 
-            var gameBoat1 = new GameBoat();
-            foreach (var each in Player1Ships)
-            {
-                gameBoat1 = new GameBoat()
-                {
-                    Name = each.Name,
-                    Size = each.Width,
-                    IsSunken = each.IsSunken,
-                    Direction = each.Direction,
-                    // Coordinates = each.AllPositions,
-                    Player = playerA
-                };
-            }
-            db.GameBoats.Add(gameBoat1);
-            var gameBoat2 = new GameBoat();
+            var game = new Game();
+
+            game.PlayerA = playerA;
+            game.PlayerB = playerB;
+            game.GameOption = gameOption;
+
+            db.Games.Add(game);
+
+            var gameBoat = new GameBoat();
             foreach (var each in Player2Ships)
             {
-                gameBoat2 = new GameBoat()
+                gameBoat = new GameBoat()
                 {
                     Name = each.Name,
                     Size = each.Width,
                     IsSunken = each.IsSunken,
+                    Player = playerB,
                     Direction = each.Direction,
-                    // Coordinates = each.AllPositions,
-                    Player = playerB
+                    LifeCount = each.LifeCount
                 };
             }
-            db.GameBoats.Add(gameBoat2);
+            db.GameBoats.Add(gameBoat);
 
-            var ship = new Ship();
-            var boat = new Boat()
+            foreach (var each in Player1Ships)
             {
-                Name =  ship.Name,
-                Size =  ship.Width,
-                GameOptionBoats = new List<GameOptionBoat>()
-            };
-            var playerBoardState = new PlayerBoardState()
-            {
-                BoardState = BoardToJson(_board1)
-            };
-
-            var boardState = new BoardState();
-            var player = "";
-            var hasBomb = false;
-            var shipId = 0;
-            var board = _board2;
-            if (_nextMoveByX)
-            {
-                player = _player1;
-                board = _board1;
-            }
-            else
-            {
-                player = _player2;
-            }
-
-            for (int i = 0; i < _width; i++)
-            {
-                for (int j = 0; j < _height; j++)
+                gameBoat = new GameBoat()
                 {
-                    if (board[i, j] == CellState.Ship)
-                    {
-                        shipId = GetBoatId(player, i, j);
-                    }
-
-                    if (board[i, j] == X)
-                    {
-                        hasBomb = true;
-                    }
-                    boardState.Board[i][j] = new BoardSquareState()
-                    {
-                        BoatId = shipId,
-                        Bomb = hasBomb
-                    };
-
-                }
+                    Name = each.Name,
+                    Size = each.Width,
+                    IsSunken = each.IsSunken,
+                    Player = playerB,
+                    Direction = each.Direction,
+                    LifeCount = each.LifeCount
+                };
             }
 
-
-            db.Boats.Add(boat);
-
-            Console.WriteLine("Before add");
-            Console.WriteLine(game);
-            Console.WriteLine(gameBoat1);
-            // db.Games.Add(game);
-            // // this will actually save data to db
-            // db.SaveChanges();
+            db.GameBoats.Add(gameBoat);
 
 
-
-        }
-        public string BoardToJson(CellState[,] board)
-        {
-
-            var jsonOptions = new JsonSerializerOptions()
+            var playerABoardState = new PlayerBoardState()
             {
-                WriteIndented = true
+                BoardState =  GetSerializedGameState(Board1),
+                Player = playerA
             };
-            var serializedGame = GetSerializedGameState(board);
-            var jsonString = JsonSerializer.Serialize(serializedGame, jsonOptions);
+            var playerBBoardState = new PlayerBoardState()
+            {
+                BoardState =  GetSerializedGameState(Board2),
+                Player = playerB
+            };
 
-            return jsonString;
+            db.PlayerBoardStates.Add(playerABoardState);
+            db.PlayerBoardStates.Add(playerBBoardState);
+            // // this will actually save data to db
+            db.SaveChanges();
 
+            return "";
         }
-
-
     }
 
 }

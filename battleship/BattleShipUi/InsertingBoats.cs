@@ -8,11 +8,11 @@ namespace BattleShipUi
 
     {
         private bool _canInsert;
-        public bool CanInsert
-        {
-            get => _canInsert;
-            set => _canInsert = value;
-        }
+        // public bool CanInsert
+        // {
+        //     get => _canInsert;
+        //     set => _canInsert = value;
+        // }
         public string InsertingBoat()
         {
             var input = "";

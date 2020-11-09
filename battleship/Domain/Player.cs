@@ -12,7 +12,6 @@ namespace Domain
 
         public EPlayerType EPlayerType { get; set; }
 
-        public int? GameId { get; set; } // is this optional? at least initially, before game is created
         public Game Game { get; set; } = null!;
 
         public ICollection<PlayerBoardState> PlayerBoardStates { get; set; } = null!;

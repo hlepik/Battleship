@@ -7,7 +7,6 @@ namespace GameBrain
         {
             Name = "Patrol";
             Width = 1;
-
         }
     }
     public class Cruiser : Ship
@@ -25,7 +24,6 @@ namespace GameBrain
         {
             Name = "Submarine";
             Width = 3;
-
         }
 
     }
@@ -35,7 +33,6 @@ namespace GameBrain
         {
             Name = "Battleship";
             Width = 4;
-
         }
 
     }
@@ -45,7 +42,6 @@ namespace GameBrain
         {
             Name = "Carrier";
             Width = 5;
-
         }
     }
     public class  MegaSubmarine : Ship
@@ -54,7 +50,6 @@ namespace GameBrain
         {
             Name = "MegaSubmarine";
             Width = 6;
-
         }
     }
 
@@ -64,7 +59,6 @@ namespace GameBrain
         {
             Name = "MegaBattleship";
             Width = 7;
-
         }
     }
 
@@ -74,7 +68,6 @@ namespace GameBrain
         {
             Name = "MegaCarrier";
             Width = 8;
-
         }
     }
 }

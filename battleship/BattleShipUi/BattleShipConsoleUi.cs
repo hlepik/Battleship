@@ -70,11 +70,13 @@ namespace BattleShipUi
                     for (int colIndex = 0; colIndex < width; colIndex++)
                     {
                         Console.Write("| ");
-                        if (board[colIndex, rowIndex] == CellState.X)
+
+
+                        if ( board[colIndex, rowIndex].Bomb )
                         {
                             Console.ForegroundColor = Color.Maroon;
                         }
-                        else if (board[colIndex, rowIndex] == CellState.O)
+                        else if (board[colIndex, rowIndex].Miss)
                         {
                             Console.ForegroundColor = Color.DimGray;
                         }
@@ -112,14 +114,22 @@ namespace BattleShipUi
         {
 
 
-            switch (cellState)
+            if (cellState.Ship)
             {
-                case CellState.Empty: return " ";
-                case CellState.Ship: return (Hidden ? "S" : " ")!;
-                case CellState.X: return "X";
-                case CellState.O: return "O";
+                return (Hidden ? "S" : " ")!;
             }
-
+            if (cellState.Bomb)
+            {
+                return "X";
+            }
+            if (cellState.Miss)
+            {
+                return "O";
+            }
+            if (cellState.Empty)
+            {
+                return " ";
+            }
 
 
             return "-";

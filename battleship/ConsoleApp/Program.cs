@@ -98,7 +98,7 @@ namespace ConsoleApp
             var (width, height) = input.BoardSize();
             var gameRules = rules.GameRules();
             var game = new BattleShip(width, height, player1, player2, gameRules);
-            BattleShip.NextMove = nextMove.NextMoveAfterHitRule();
+            game.NextMove = nextMove.NextMoveAfterHitRule();
             game.WhoWillPlaceTheShips = insert.InsertingBoat();
             Console.Clear();
             boats.BoatsLocation(game, player1);
@@ -113,34 +113,18 @@ namespace ConsoleApp
         {
             if (BattleShip.Ai && game.NextMoveByX )
             {
-                BattleShip.PlayerType = EPlayerType.Human;
+                game.PlayerType = EPlayerType.Human;
 
             }
             else if(BattleShip.Ai && !game.NextMoveByX)
             {
-                BattleShip.PlayerType = EPlayerType.Ai;
+                game.PlayerType = EPlayerType.Ai;
             }
             else
             {
-                BattleShip.PlayerType = EPlayerType.Human;
+                game.PlayerType = EPlayerType.Human;
             }
-            // var dbOption = new DbContextOptionsBuilder<AppDbContext>()
-            //         .UseSqlServer(@"
-            //         Server=barrel.itcollege.ee,1533;
-            //         User Id=student;
-            //         Password=Student.Bad.password.0;
-            //         Database=hlepik_battleship;
-            //         MultipleActiveResultSets=true;
-            //         "
-            // ).Options;
-            //     using var dbCtx = new AppDbContext(dbOption);
-            //     dbCtx.Database.Migrate();
-            //
-            //     var playerA = new  Player();
-            //     var playerB = new  Player();
-            //     var game1 = new Game();
-            //
-            //     game.GetPlayer1() = playerA;
+
             Console.Clear();
             var menu = new Menu(3);
 
@@ -149,12 +133,12 @@ namespace ConsoleApp
             {
                 Console.Clear();
                 System.Console.WriteLine($"" +
-                                         $"{(game.NextMoveByX ? game.GetPlayer1() : game.GetPlayer2())}'s " +
+                                         $"{(game.NextMoveByX ? game.Player1 : game.Player2)}'s " +
                                          $"turn! Press enter to continue... ");
                 Console.ReadLine();
 
-                var board1 = game.GetBoard(game.GetPlayer1());
-                var board2 = game.GetBoard(game.GetPlayer2());
+                var board1 = game.GetBoard(game.Player1);
+                var board2 = game.GetBoard(game.Player2);
 
                 var userChoice = "";
 
@@ -167,9 +151,9 @@ namespace ConsoleApp
 
                 }
 
-                if (game.NextMoveByX || game.GetPlayer2() != "AI")
+                if (game.NextMoveByX || game.Player2 != "AI")
                 {
-                    UserInput.GetTableName(game.GetPlayer1());
+                    UserInput.GetTableName(game.Player1);
                     if (game.NextMoveByX)
                     {
                         BattleShipConsoleUi.Hidden = true;
@@ -183,7 +167,7 @@ namespace ConsoleApp
                         BattleShipConsoleUi.Hidden = true;
                     }
 
-                    UserInput.GetTableName(game.GetPlayer2());
+                    UserInput.GetTableName(game.Player2);
                     BattleShipConsoleUi.DrawBoard(board2);
                 }
 
@@ -197,11 +181,11 @@ namespace ConsoleApp
                         if (!BattleShip.Ai || game.NextMoveByX)
                         {
                             Console.Write(
-                                $"Give Y (A-{Convert.ToChar(game.GetWidth() + 64)}) X (1-{game.GetHeight()}): ");
+                                $"Give Y (A-{Convert.ToChar(game.Width + 64)}) X (1-{game.Height}): ");
                         }
 
                         (x, y) = MoveCoordinates.GetMoveCoordinates(game);
-                    } while (x > game.GetWidth() - 1 || y > game.GetHeight() - 1);
+                    } while (x > game.Width - 1 || y > game.Height - 1);
 
                     bombText = game.MakeAMove(game, x, y, board);
 
@@ -218,7 +202,7 @@ namespace ConsoleApp
                     int green = 100;
                     int blue = 255;
 
-                    Console.WriteAscii($"{(game.NextMoveByX ? game.GetPlayer1() : game.GetPlayer2())} WON!",
+                    Console.WriteAscii($"{(game.NextMoveByX ? game.Player1 : game.Player2)} WON!",
                         Color.FromArgb(red, green, blue));
                 }
 
@@ -229,9 +213,7 @@ namespace ConsoleApp
             Console.ForegroundColor = Color.Blue;
 
             menu.AddMenuItem(new MenuItem($"Save game", userChoice: "S",
-                () => ""
-                    // "{ return SaveGameAction(game); "}
-                    ));
+                () => { return game.SaveGameToDb(); } ));
 
             menu.RunMenu();
 

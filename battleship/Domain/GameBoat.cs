@@ -13,6 +13,8 @@ namespace Domain
 
         [MaxLength(32)]
         public string Name { get; set; } = null!;
+        public int LifeCount { get; set; }
+
         public string Direction { get; set; } = null!;
 
         public bool IsSunken { get; set; }

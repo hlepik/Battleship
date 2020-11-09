@@ -16,10 +16,10 @@ namespace BattleShipUi
             game.CanInsert = true;
 
             Console.Clear();
-            // if (game.WhoWillPlaceTheShips == "P")
-            // {
+            if (game.WhoWillPlaceTheShips == "M")
+            {
                 System.Console.WriteLine($"{playerName} please insert your ships!");
-            // }
+            }
 
             var allBoats = boats.BoatsCount(game).OrderBy(x => x.Width)
                 .Reverse();
@@ -38,8 +38,8 @@ namespace BattleShipUi
                     do
                     {
                         Random random = new Random();
-                        x = random.Next(0, game.GetWidth());
-                        y = random.Next(0, game.GetHeight());
+                        x = random.Next(0, game.Width);
+                        y = random.Next(0, game.Height);
                         var num = random.Next(1, 2);
                         if (num == 1 )
                         {
@@ -52,7 +52,7 @@ namespace BattleShipUi
 
                         place.BoatLocationCheck(game, x, y, each.Width, direction, playerName);
 
-                    }while (x > game.GetWidth() - 1 || y > game.GetHeight() - 1 || !game.CanInsert);
+                    }while (x > game.Width - 1 || y > game.Height - 1 || !game.CanInsert);
 
                 }
 
@@ -66,7 +66,7 @@ namespace BattleShipUi
                         System.Console.Write($"Enter {each.Name} size={each.Width} location: ");
                         (x, y) = MoveCoordinates.GetMoveCoordinates(game);
 
-                        if (each.Width > 1 && x < game.GetWidth() && y < game.GetHeight() )
+                        if (each.Width > 1 && x < game.Width && y < game.Height )
                         {
 
                             do
@@ -85,7 +85,7 @@ namespace BattleShipUi
 
                         }
 
-                        if (x < game.GetWidth() || y < game.GetHeight())
+                        if (x < game.Width || y < game.Height)
                         {
                             place.BoatLocationCheck(game, x, y, each.Width, direction, playerName);
 
@@ -96,7 +96,7 @@ namespace BattleShipUi
                         System.Console.WriteLine("You can't place your ship here!");
                         Console.ForegroundColor = Color.Blue;
 
-                    } while (x > game.GetWidth() - 1 || y > game.GetHeight() - 1 || !game.CanInsert);
+                    } while (x > game.Width- 1 || y > game.Height - 1 || !game.CanInsert);
                 }
 
                 game.InsertBoat(x, y, playerName, each.Width, direction, each.Name);

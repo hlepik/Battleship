@@ -21,20 +21,20 @@ namespace GameBrain
 
             game.CanInsert = true;
 
-            var board = game.GetBoard1();
+            var board = game.Board1;
 
-            if (playerName == game.GetPlayer2())
+            if (playerName == game.Player2)
             {
-                board = game.GetBoard2();
+                board = game.Board2;
             }
 
             switch (direction)
             {
-                case "R" when Yes == game.GetGameRule():
+                case "R" when Yes == game.GameRule:
                 {
                     for (int i = x; i < x + size; i++)
                     {
-                        if (i >= game.GetWidth() || board[i, y] != CellState.Empty)
+                        if (i >= game.Width || !board[i, y].Empty)
                         {
                             game.CanInsert = false;
                             break;
@@ -44,34 +44,34 @@ namespace GameBrain
 
                     break;
                 }
-                case "R" when x + size -1 < game.GetWidth():
+                case "R" when x + size -1 < game.Width:
                 {
                     for (int i = x - 1; i < x + size + 1; i++)
                     {
                         for (int j = y - 1; j < y + 2; j++)
                         {
-                            if (i < 0 || i >= game.GetWidth() || j < 0 || j >= game.GetHeight()) continue;
-                            if (No== game.GetGameRule() && board[i, j] != CellState.Empty && !_aroundShip)
+                            if (i < 0 || i >= game.Width || j < 0 || j >= game.Height) continue;
+                            if (No== game.GameRule && !board[i, j].Empty && !_aroundShip)
                             {
                                 game.CanInsert  = false;
                                 break;
                             }
-                            if (No == game.GetGameRule() && board[i, j] == CellState.Empty && _aroundShip)
+                            if (No == game.GameRule && board[i, j].Empty && _aroundShip)
                             {
-                                board[i, j] = CellState.O;
+                                board[i, j].Miss = true;
                             }
-                            if (Corner == game.GetGameRule() &&
-                                board[i, j] == CellState.Empty && _aroundShip)
+                            if (Corner == game.GameRule &&
+                                board[i, j].Empty && _aroundShip)
                             {
                                 if (!BoardCorner(x, y, i, j, size, direction))
                                 {
-                                    board[i, j] = CellState.O;
+                                    board[i, j].Miss = true;
                                 }
 
                             }
 
-                            if (Corner == game.GetGameRule() &&
-                                board[i, j] != CellState.Empty && !_aroundShip)
+                            if (Corner == game.GameRule &&
+                                !board[i, j].Empty && !_aroundShip)
                             {
                                 game.CanInsert = false;
 
@@ -97,11 +97,11 @@ namespace GameBrain
             case "R":
                 game.CanInsert = false;
                 break;
-            case "D" when Yes == game.GetGameRule():
+            case "D" when Yes == game.GameRule:
             {
                 for (int i = y; i < y + size; i++)
                 {
-                    if (i >= game.GetHeight() || board[x, i] != CellState.Empty)
+                    if (i >= game.Height || !board[x, i].Empty)
                     {
                         game.CanInsert = false;
                         break;
@@ -110,34 +110,34 @@ namespace GameBrain
 
                 break;
             }
-            case "D" when y + size -1 < game.GetHeight():
+            case "D" when y + size -1 < game.Height:
             {
                 for (int i = x - 1; i < x + 2; i++)
                 {
                     for (int j = y - 1; j < y + size + 1; j++)
                     {
-                        if (i < 0 || i >= game.GetWidth() || j < 0 || j >= game.GetHeight()) continue;
-                        if (No == game.GetGameRule() && board[i, j] != CellState.Empty && !_aroundShip)
+                        if (i < 0 || i >= game.Width || j < 0 || j >= game.Height) continue;
+                        if (No == game.GameRule && !board[i, j].Empty && !_aroundShip)
                         {
                             game.CanInsert = false;
                             break;
                         }
-                        if (No == game.GetGameRule() && board[i, j] == CellState.Empty && _aroundShip)
+                        if (No == game.GameRule && board[i, j].Empty == true && _aroundShip)
                         {
-                            board[i, j] = CellState.O;
+                            board[i, j].Miss = true;
                         }
-                        if (Corner == game.GetGameRule() &&
-                            board[i, j] == CellState.Empty && _aroundShip)
+                        if (Corner == game.GameRule &&
+                            board[i, j].Empty && _aroundShip)
                         {
                             if (!BoardCorner(x, y, i, j, size, direction))
                             {
-                                board[i, j] = CellState.O;
+                                board[i, j].Miss = true;
                             }
 
                         }
 
-                        if (Corner == game.GetGameRule() &&
-                            board[i, j] != CellState.Empty && !_aroundShip)
+                        if (Corner == game.GameRule &&
+                           !board[i, j].Empty && !_aroundShip)
                         {
                             game.CanInsert = false;
 

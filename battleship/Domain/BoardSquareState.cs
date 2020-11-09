@@ -9,7 +9,6 @@ namespace Domain
         public int BoatId { get; set; }
         public bool Bomb { get; set; }
 
-        public ICollection<BoardCells> BoardCells { get; set; } = null!;
 
     }
 }

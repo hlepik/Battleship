@@ -34,8 +34,8 @@ namespace BattleShipUi
                 // }
                 // else
                 {
-                    x = random.Next(0, game.GetWidth());
-                    y = random.Next(0, game.GetHeight());
+                    x = random.Next(0, game.Width);
+                    y = random.Next(0, game.Height);
                     AiLastMove = new int[] {x, y};
                 }
 
@@ -69,7 +69,7 @@ namespace BattleShipUi
                 x = int.Parse(letters) - 1;
             }
 
-            if (x > game.GetWidth() - 1 || y > game.GetHeight() - 1)
+            if (x > game.Width- 1 || y > game.Height - 1)
             {
                 Console.ForegroundColor = Color.Maroon;
                 System.Console.WriteLine("Input was not in a correct format!");
