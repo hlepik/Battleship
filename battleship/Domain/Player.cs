@@ -13,6 +13,7 @@ namespace Domain
         public EPlayerType EPlayerType { get; set; }
 
         public Game Game { get; set; } = null!;
+        public int? GameId { get; set; }
 
         public ICollection<PlayerBoardState> PlayerBoardStates { get; set; } = null!;
         public ICollection<GameBoat> GameBoats { get; set; } = null!;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using DAL;
 using Domain;
@@ -14,7 +15,8 @@ namespace GameBrain
         public static bool GameIsOver { get; set; }
         private bool _canInsert;
         public int ShipId { get; set; } = 1;
-        public  EPlayerType PlayerType { get; set; }
+        public  EPlayerType PlayerType1 { get; set; }
+        public  EPlayerType PlayerType2 { get; set; }
         private bool _nextMoveByX = true;
         public EBoatsCanTouch GameRule;
         public CellState[,] Board1  { get; set; } = default! ;
@@ -30,6 +32,7 @@ namespace GameBrain
         public int Height;
         public string Player1 = null!;
         public string Player2 = null!;
+        public string FileName = null!;
 
 
         public string WhoWillPlaceTheShips { get; set; } = null!;
@@ -111,6 +114,8 @@ namespace GameBrain
                     board[i, y].Ship = true;
                     board[i, y].ShipId = ShipId;
                 }
+
+                board[x, y].FirstLocation = new[] {x, y};
                 ships.Add(new Ship(name, size, direction, shipId));
                 ShipId += 1;
             }
@@ -123,7 +128,7 @@ namespace GameBrain
                     board[x, i].ShipId = ShipId;
 
                 }
-
+                board[x, y].FirstLocation = new[] {x, y};
                 ships.Add(new Ship(name, size, direction, shipId));
 
                 ShipId += 1;
@@ -229,6 +234,10 @@ namespace GameBrain
                         {
                             AiHit = false;
                         }
+                        var xy = board[x, y].FirstLocation;
+                        x = xy[0];
+                        y = xy[1];
+
 
                         insert.BoatLocationCheck(game, x, y, each.Width, each.Direction, player);
                         GameOver();
@@ -315,62 +324,56 @@ namespace GameBrain
 
 
         public string SaveGameToDb()
-        {using var db = new AppDbContext();
+        {
+            using var db = new AppDbContext();
             db.Database.Migrate();
 
-            var playerA = new Player()
-            {
-                Name = Player1,
-                EPlayerType = PlayerType,
-            };
-
-            db.Players.Add(playerA);
-
-
-            var playerB = new Player()
-            {
-                Name = Player2,
-                EPlayerType = PlayerType,
-            };
-            db.Players.Add(playerB);
-            db.SaveChanges();
-
-            var boat = new Boat();
-
-            foreach (var each in Player1Ships)
-            {
-                boat = new Boat()
-                {
-                    Name = each.Name,
-                    Size = each.Width
-                };
-            }
-            db.Boats.Add(boat);
 
             var gameOption = new GameOption()
             {
-                Name = "Battleship",
+                Name = FileName,
                 BoardWidth = Width,
                 BoardHeight = Height,
                 EBoatsCanTouch = GameRule,
                 ENextMoveAfterHit = NextMove,
-
-
             };
             db.GameOptions.Add(gameOption);
+            var playerA = new Player()
+            {
+                Name = Player1,
+                EPlayerType = PlayerType1,
+            };
+
+            var playerB = new Player()
+            {
+                Name = Player2,
+                EPlayerType = PlayerType2,
+            };
 
             var game = new Game();
-
             game.PlayerA = playerA;
             game.PlayerB = playerB;
+
+
             game.GameOption = gameOption;
-
             db.Games.Add(game);
+            db.SaveChanges();
 
-            var gameBoat = new GameBoat();
+            playerA.Game = game;
+            playerB.Game = game;
+            foreach (var each in Player1Ships)
+            {
+                var boat = new Boat()
+                {
+                    Name = each.Name,
+                    Size = each.Width
+                };
+                db.Boats.Add(boat);
+            }
+
             foreach (var each in Player2Ships)
             {
-                gameBoat = new GameBoat()
+                var gameBoat = new GameBoat()
                 {
                     Name = each.Name,
                     Size = each.Width,
@@ -379,12 +382,14 @@ namespace GameBrain
                     Direction = each.Direction,
                     LifeCount = each.LifeCount
                 };
+                gameBoat.Player = playerB;
+                db.GameBoats.Add(gameBoat);
             }
-            db.GameBoats.Add(gameBoat);
+
 
             foreach (var each in Player1Ships)
             {
-                gameBoat = new GameBoat()
+                var gameBoat = new GameBoat()
                 {
                     Name = each.Name,
                     Size = each.Width,
@@ -393,10 +398,9 @@ namespace GameBrain
                     Direction = each.Direction,
                     LifeCount = each.LifeCount
                 };
+                gameBoat.Player = playerA;
+                db.GameBoats.Add(gameBoat);
             }
-
-            db.GameBoats.Add(gameBoat);
-
 
             var playerABoardState = new PlayerBoardState()
             {
@@ -412,10 +416,12 @@ namespace GameBrain
             db.PlayerBoardStates.Add(playerABoardState);
             db.PlayerBoardStates.Add(playerBBoardState);
             // // this will actually save data to db
-            db.SaveChanges();
 
+            db.SaveChanges();
             return "";
         }
+
+
     }
 
 }

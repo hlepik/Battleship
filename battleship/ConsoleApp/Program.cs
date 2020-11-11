@@ -57,6 +57,11 @@ namespace ConsoleApp
             int green = 100;
             int blue = 255;
 
+            {
+                using var db = new AppDbContext();
+                db.Database.Migrate();
+
+            }
 
             Console.WriteAscii("BATTLESHIP", Color.FromArgb(red, green, blue));
 
@@ -64,7 +69,7 @@ namespace ConsoleApp
             var menu2 = new Menu(2);
             menu2.AddMenuItem(new MenuItem("New game human vs human", "1", Parameters));
             menu2.AddMenuItem(new MenuItem("New game human vs AI", "2", Ai));
-            menu2.AddMenuItem(new MenuItem($"Load game", userChoice: "L", () => { return LoadGameAction(); })
+            menu2.AddMenuItem(new MenuItem($"Load game", userChoice: "L", () => { return GetGame.GetGameFromDb(); })
             );
 
             var menu1 = new Menu(1);
@@ -103,26 +108,27 @@ namespace ConsoleApp
             Console.Clear();
             boats.BoatsLocation(game, player1);
             boats.BoatsLocation(game, player2);
-            // game.SaveGameToDb();
             PlayGame(game);
 
             return "";
         }
 
         static string PlayGame(BattleShip game)
+
         {
             if (BattleShip.Ai && game.NextMoveByX )
             {
-                game.PlayerType = EPlayerType.Human;
+                game.PlayerType1 = EPlayerType.Human;
 
             }
             else if(BattleShip.Ai && !game.NextMoveByX)
             {
-                game.PlayerType = EPlayerType.Ai;
+                game.PlayerType2 = EPlayerType.Ai;
             }
             else
             {
-                game.PlayerType = EPlayerType.Human;
+                game.PlayerType1 = EPlayerType.Human;
+                game.PlayerType2 = EPlayerType.Human;
             }
 
             Console.Clear();
@@ -213,13 +219,15 @@ namespace ConsoleApp
             Console.ForegroundColor = Color.Blue;
 
             menu.AddMenuItem(new MenuItem($"Save game", userChoice: "S",
-                () => { return game.SaveGameToDb(); } ));
+                () => { return SaveGameAction(game); } ));
 
             menu.RunMenu();
 
             return "";
 
     }
+
+
 
         static string LoadGameAction()
         {
@@ -241,24 +249,23 @@ namespace ConsoleApp
             return "";
         }
 
-        // static string SaveGameAction(BattleShip game)
-        // {
-        //     // 2020-10-12
-        //     var defaultName = "save_" + DateTime.Now.ToString("yyyy-MM-dd") + ".json";
-        //     Console.Write($"File name ({defaultName}):");
-        //     var fileName = Console.ReadLine();
-        //     if (string.IsNullOrWhiteSpace(fileName))
-        //     {
-        //         fileName = defaultName;
-        //     }
-        //
-        //     var serializedGame = game.GetSerializedGameState();
-        //
-        //     Console.WriteLine(serializedGame);
-        //     System.IO.File.WriteAllText(fileName, serializedGame);
-        //
-        //     return "";
-        // }
+        static string SaveGameAction(BattleShip game)
+        {
+            var defaultName = "save_" + DateTime.Now.ToString("yyyy-MM-dd") + ".json";
+            Console.Write($"File name ({defaultName}):");
+            game.FileName = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(game.FileName))
+            {
+                game.FileName = defaultName;
+            }
+
+            var serializedGame = game.SaveGameToDb();
+
+            Console.WriteLine(serializedGame);
+            System.IO.File.WriteAllText(game.FileName, serializedGame);
+
+            return "";
+        }
 
 
     }

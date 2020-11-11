@@ -40,7 +40,7 @@ namespace BattleShipUi
                         Random random = new Random();
                         x = random.Next(0, game.Width);
                         y = random.Next(0, game.Height);
-                        var num = random.Next(1, 2);
+                        var num = random.Next(1, 3);
                         if (num == 1 )
                         {
                             direction = "R";
