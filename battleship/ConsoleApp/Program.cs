@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using BattleShipUi;
 using DAL;
 using Domain;
@@ -69,11 +70,11 @@ namespace ConsoleApp
             var menu2 = new Menu(2);
             menu2.AddMenuItem(new MenuItem("New game human vs human", "1", Parameters));
             menu2.AddMenuItem(new MenuItem("New game human vs AI", "2", Ai));
-            menu2.AddMenuItem(new MenuItem($"Load game", userChoice: "L", () => { return GetGame.GetGameFromDb(); })
+            menu2.AddMenuItem(new MenuItem($"Load game", userChoice: "L", () => { return LoadGameAction(); })
             );
 
             var menu1 = new Menu(1);
-            menu1.AddMenuItem(new MenuItem("Play game", "1", menu2.RunMenu));
+            menu1.AddMenuItem(new MenuItem("BattleShip", "1", menu2.RunMenu));
 
             var menu = new Menu();
             menu.AddMenuItem(new MenuItem("Choose game", "1", menu1.RunMenu));
@@ -108,6 +109,16 @@ namespace ConsoleApp
             Console.Clear();
             boats.BoatsLocation(game, player1);
             boats.BoatsLocation(game, player2);
+            if (BattleShip.Ai)
+            {
+                game.PlayerType1 = EPlayerType.Human;
+                game.PlayerType2 = EPlayerType.Ai;
+
+            }else
+            {
+                game.PlayerType1 = EPlayerType.Human;
+                game.PlayerType2 = EPlayerType.Human;
+            }
             PlayGame(game);
 
             return "";
@@ -116,21 +127,6 @@ namespace ConsoleApp
         static string PlayGame(BattleShip game)
 
         {
-            if (BattleShip.Ai && game.NextMoveByX )
-            {
-                game.PlayerType1 = EPlayerType.Human;
-
-            }
-            else if(BattleShip.Ai && !game.NextMoveByX)
-            {
-                game.PlayerType2 = EPlayerType.Ai;
-            }
-            else
-            {
-                game.PlayerType1 = EPlayerType.Human;
-                game.PlayerType2 = EPlayerType.Human;
-            }
-
             Console.Clear();
             var menu = new Menu(3);
 
@@ -184,7 +180,7 @@ namespace ConsoleApp
                 {
                     do
                     {
-                        if (!BattleShip.Ai || game.NextMoveByX)
+                        if (game.PlayerType2 != EPlayerType.Ai || game.NextMoveByX)
                         {
                             Console.Write(
                                 $"Give Y (A-{Convert.ToChar(game.Width + 64)}) X (1-{game.Height}): ");
@@ -202,7 +198,7 @@ namespace ConsoleApp
                 System.Console.WriteLine(bombText);
                 Console.WriteLine();
 
-                if (game.GameOver())
+                if (BattleShip.GameIsOver)
                 {
                     int red = 200;
                     int green = 100;
@@ -232,17 +228,34 @@ namespace ConsoleApp
         static string LoadGameAction()
         {
             var game = new BattleShip();
-            var files = System.IO.Directory.EnumerateFiles(".", "*.json").ToList();
-            for (int i = 0; i < files.Count; i++)
+            // var files = System.IO.Directory.EnumerateFiles(".", "*.json").ToList();
+            // for (int i = 0; i < files.Count; i++)
+            // {
+            //     Console.WriteLine($"{i} - {files[i]}");
+            // }
+            using var db = new AppDbContext();
+            int count = 1;
+            foreach (var games in db.GameOptions)
             {
-                Console.WriteLine($"{i} - {files[i]}");
+                Console.WriteLine($"{count } - {games.Name}");
+                count++;
+            }
+            var fileNumber = Console.ReadLine();
+            var fileName = "";
+            count = 1;
+            var gameOptionId = 0;
+            foreach (var games in db.GameOptions){
+
+                if (count == int.Parse(fileNumber))
+                {
+                    gameOptionId = games.GameOptionId;
+                }
+                count++;
             }
 
-            var fileNo = Console.ReadLine();
-            var fileName = files[int.Parse(fileNo!.Trim())];
+            // var fileName = files[int.Parse(fileNo!.Trim())];
 
-            var jsonString = System.IO.File.ReadAllText(fileName);
-
+            game = GetGame.GetGameFromDb(gameOptionId);
             // game.SetGameStateFromJsonString(jsonString);
 
             PlayGame(game);

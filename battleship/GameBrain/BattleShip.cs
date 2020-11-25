@@ -97,7 +97,6 @@ namespace GameBrain
         {
 
             var ships = Player1Ships;
-            var shipId = ShipId;
 
             var board = Board1;
             if (playerName == Player2)
@@ -113,10 +112,10 @@ namespace GameBrain
                     board[i, y].Empty = false;
                     board[i, y].Ship = true;
                     board[i, y].ShipId = ShipId;
+                    board[i, y].FirstLocation = new[] {x, y};
                 }
 
-                board[x, y].FirstLocation = new[] {x, y};
-                ships.Add(new Ship(name, size, direction, shipId));
+                ships.Add(new Ship(name, size, direction, ShipId, false));
                 ShipId += 1;
             }
             else if (direction == "D")
@@ -126,10 +125,9 @@ namespace GameBrain
                     board[x, i].Empty = false;
                     board[x, i].Ship = true;
                     board[x, i].ShipId = ShipId;
-
+                    board[x, i].FirstLocation = new[] {x, y};
                 }
-                board[x, y].FirstLocation = new[] {x, y};
-                ships.Add(new Ship(name, size, direction, shipId));
+                ships.Add(new Ship(name, size, direction, ShipId, false));
 
                 ShipId += 1;
             }
@@ -139,7 +137,7 @@ namespace GameBrain
                 board[x, y].Ship = true;
                 board[x, y].ShipId = ShipId;
 
-                ships.Add(new Ship(name, size, direction, shipId));
+                ships.Add(new Ship(name, size, direction, ShipId, false));
                 ShipId += 1;
             }
 
@@ -260,12 +258,11 @@ namespace GameBrain
         {
 
             var count = 0;
-            var player = Player2;
+
             var check = Player1Ships;
             if (NextMoveByX)
             {
                 check = Player2Ships;
-                player = Player1;;
             }
             foreach (var each in check)
             {
@@ -380,7 +377,8 @@ namespace GameBrain
                     IsSunken = each.IsSunken,
                     Player = playerB,
                     Direction = each.Direction,
-                    LifeCount = each.LifeCount
+                    LifeCount = each.LifeCount,
+                    ShipId = each.ShipId
                 };
                 gameBoat.Player = playerB;
                 db.GameBoats.Add(gameBoat);
@@ -396,7 +394,8 @@ namespace GameBrain
                     IsSunken = each.IsSunken,
                     Player = playerB,
                     Direction = each.Direction,
-                    LifeCount = each.LifeCount
+                    LifeCount = each.LifeCount,
+                    ShipId = each.ShipId
                 };
                 gameBoat.Player = playerA;
                 db.GameBoats.Add(gameBoat);
@@ -420,6 +419,34 @@ namespace GameBrain
             db.SaveChanges();
             return "";
         }
+
+        public string SetGameStateFromJsonString(string board1, string board2)
+        {
+            var state = JsonSerializer.Deserialize<GameState>(board1);
+            var state2 = JsonSerializer.Deserialize<GameState>(board2);
+
+            // restore actual state from deserialized state
+            NextMoveByX = state.NextMoveByX;
+            Board1 =  new CellState[state.Width, state.Height];
+            Board2 =  new CellState[state2.Width, state2.Height];
+
+            for (var x = 0; x < state.Width; x++)
+            {
+                for (var y = 0; y < state.Height; y++)
+                {
+                    Board1[x, y] = state.Board1[x][y];
+                }
+            }
+            for (var x = 0; x < state2.Width; x++)
+            {
+                for (var y = 0; y < state2.Height; y++)
+                {
+                    Board2[x, y] = state2.Board1[x][y];
+                }
+            }
+            return "";
+        }
+
 
 
     }

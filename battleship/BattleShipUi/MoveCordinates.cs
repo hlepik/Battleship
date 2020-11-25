@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using Domain;
 using GameBrain;
 using Console = Colorful.Console;
 
@@ -20,7 +21,7 @@ namespace BattleShipUi
             var letters = string.Empty;
 
 
-            if (BattleShip.Ai && !game.NextMoveByX)
+            if (game.PlayerType2 == EPlayerType.Ai && !game.NextMoveByX)
             {
                 Random random = new Random();
                 // if (BattleShip.AiHit)

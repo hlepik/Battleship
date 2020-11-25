@@ -23,8 +23,6 @@ namespace MenuSystem
         private MenuItem? _menuItemReturnPrevious;
         private MenuItem? _menuItemReturnMain;
         private MenuItem _menuItemExit = new MenuItem("Exit", "X", () => "");
-        private MenuItem _menuItemNewGame = new MenuItem("Start New Game", "G", () => "");
-
 
         public Menu(int menuLevel = 0)
         {
@@ -90,6 +88,7 @@ namespace MenuSystem
                     Console.WriteLine($"====== {Title} ======");
                 }
                 Console.ForegroundColor = Color.Blue;
+
                 if (!BattleShip.GameIsOver)
                 {
                     foreach (var menuItem in MenuItems.Values)
@@ -99,8 +98,6 @@ namespace MenuSystem
                 }
                 else
                 {
-
-                    System.Console.WriteLine(_menuItemNewGame);
                     BattleShip.GameIsOver = false;
                 }
 
