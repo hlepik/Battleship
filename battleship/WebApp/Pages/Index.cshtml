@@ -1,0 +1,64 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Battleship</h1>
+</div>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<form method="post">
+    <div class="row">
+        <div class="col">
+            <button type="submit" class="btn btn-primary">New game</button>
+        </div>
+    </div>
+</form>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Game![0].Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Game![0].GameOption.Name)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.Game![0].PlayerA)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Game![0].PlayerB)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Game!) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GameOption.Name)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerA.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerB.Name)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.GameId">Load</a>
+                <a asp-page="./Games/Delete" asp-route-id="@item.GameId">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

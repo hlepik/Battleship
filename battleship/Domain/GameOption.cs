@@ -8,9 +8,9 @@ namespace Domain
     {
         public int GameOptionId { get; set; }
 
-        [MaxLength(128)]
-        public string Name { get; set; } = null!;
 
+        [MinLength(2), MaxLength(128)]
+        public string Name { get; set; } = null!;
         public int BoardWidth { get; set; }
         public int BoardHeight { get; set; }
 
@@ -18,8 +18,6 @@ namespace Domain
         public EBoatsCanTouch EBoatsCanTouch { get; set; }
 
         public ENextMoveAfterHit ENextMoveAfterHit { get; set; }
-
-        public ICollection<GameOptionBoat> GameOptionBoats { get; set; } = null!;
 
         public ICollection<Game> Games { get; set; } = null!;
     }

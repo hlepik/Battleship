@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using DAL;
@@ -14,6 +15,8 @@ namespace GameBrain
     {
         public static bool GameIsOver { get; set; }
         private bool _canInsert;
+        public Game? Game { get; set; }
+        public int GameId { get; set; }
         public int ShipId { get; set; } = 1;
         public  EPlayerType PlayerType1 { get; set; }
         public  EPlayerType PlayerType2 { get; set; }
@@ -21,6 +24,8 @@ namespace GameBrain
         public EBoatsCanTouch GameRule;
         public CellState[,] Board1  { get; set; } = default! ;
         public CellState[,] Board2  { get; set; } = default!;
+        public bool TextWhenMiss { get; set; }
+        public bool TextWhenHit { get; set; }
 
         public static bool Ai { get; set; }
         public bool AiHit { get; set; }
@@ -30,7 +35,10 @@ namespace GameBrain
 
         public int Width;
         public int Height;
+
         public string Player1 = null!;
+        public int Player1Id { get; set; }
+        public int Player2Id { get; set; }
         public string Player2 = null!;
         public string FileName = null!;
 
@@ -48,6 +56,11 @@ namespace GameBrain
         {
             get => _canInsert;
             set => _canInsert = value;
+        }
+
+        public CellState[,] GetBoard1()
+        {
+            return Board1;
         }
 
         public BattleShip(int width, int height, string player1, string player2, EBoatsCanTouch gameRule)
@@ -144,57 +157,36 @@ namespace GameBrain
             return false;
         }
 
-        public string MakeAMove(BattleShip game, int x, int y, CellState[,] board)
+        public string MakeAMove(int x, int y, CellState[,] board)
         {
-            var output = "";
 
-            if (board == Board1)
+            TextWhenMiss = false;
+
+            if (board[x, y].Ship)
             {
-
-                if (Board2[x, y].Ship)
-                {
-                    Board2[x, y].Ship = false;
-                    Board2[x, y].Bomb = true;
-                    output = BoardAfterHit(game, x, y);
-
-                }
-                else if (Board2[x, y].Empty)
-                {
-                    Board2[x, y].Empty = false;
-                    Board2[x, y].Miss = true;
-                    _nextMoveByX = !_nextMoveByX;
-                    output = "You missed!";
-                }
-            }
-            else
-            {
-                if (Board1[x, y].Ship)
-                {
-                    Board1[x, y].Ship = false;
-                    Board1[x, y].Bomb = true;
-
-                    output = BoardAfterHit(game, x, y);
-                }
-                else if (Board1[x, y].Empty)
-                {
-                    Board1[x, y].Empty = false;
-                    Board1[x, y].Miss = true;
-                    _nextMoveByX = !_nextMoveByX;
-                    output = "You missed!";
-                }
-
+               board[x, y].Ship = false;
+               board[x, y].Bomb = true;
 
             }
+            else if (board[x, y].Empty)
+            {
+                board[x, y].Empty = false;
+                board[x, y].Miss = true;
+                _nextMoveByX = !_nextMoveByX;
+                TextWhenMiss = true;
+            }
 
-            return output;
+
+            return "";
         }
 
-        public string BoardAfterHit(BattleShip game, int x, int y)
+        public string BoardAfterHit(int x, int y, BattleShip game)
         {
 
+            TextWhenHit = false;
             var ship = Player1Ships;
             var insert = new CanInsertBoat();
-            var output = "";
+
             var player = Player1;
             var board = Board1;
             if (NextMoveByX)
@@ -214,7 +206,8 @@ namespace GameBrain
 
                     if (each.LifeCount > 1)
                     {
-                        output = "Hit!";
+
+                        TextWhenHit = true;
                         each.LifeCount -= 1;
 
                         if (Ai && !NextMoveByX)
@@ -224,7 +217,6 @@ namespace GameBrain
                     }
                     else
                     {
-                        output = "Ship has been destroyed!";
                         each.IsSunken = true;
                         insert.AroundShip = true;
 
@@ -237,6 +229,7 @@ namespace GameBrain
                         y = xy[1];
 
 
+
                         insert.BoatLocationCheck(game, x, y, each.Width, each.Direction, player);
                         GameOver();
                     }
@@ -245,14 +238,12 @@ namespace GameBrain
 
                 if (ENextMoveAfterHit.OtherPlayer == NextMove)
                 {
-                    game.NextMoveByX = !game.NextMoveByX;
+                    NextMoveByX = !NextMoveByX;
                 }
             }
 
-            return output;
+            return "";
         }
-
-
 
         public bool  GameOver()
         {
@@ -294,20 +285,18 @@ namespace GameBrain
 
             };
 
-            state.Board1 = new CellState[state.Width ][];
+            state.Board = new CellState[state.Width ][];
 
-            for (var i = 0; i < state.Board1.Length; i++)
+            for (var i = 0; i < state.Board.Length; i++)
             {
-                state.Board1[i] = new CellState[state.Height];
+                state.Board[i] = new CellState[state.Height];
             }
-
 
             for (var x = 0; x < state.Width; x++)
             {
                 for (var y = 0; y < state.Height; y++)
                 {
-                    state.Board1[x][y] = board[x, y];
-
+                    state.Board[x][y] = board[x, y];
                 }
             }
 
@@ -326,13 +315,81 @@ namespace GameBrain
             db.Database.Migrate();
 
 
+            if (GameId != 0)
+            {
+                Game = db.Games.Where(x => x.GameId == GameId)
+                    .Include(x => x.PlayerAId)
+                    .Include(x => x.PlayerBId).FirstOrDefault();
+
+                if (NextMoveByX)
+                {
+                    var player2BoardState = new PlayerBoardState()
+                    {
+                        BoardState =  GetSerializedGameState(Board2),
+                        Player = Game.PlayerB
+                    };
+                    db.PlayerBoardStates.Add(player2BoardState);
+
+                    foreach (var each in Player2Ships)
+                    {
+                        var gameBoat = new GameBoat()
+                        {
+                            Name = each.Name,
+                            Size = each.Width,
+                            IsSunken = each.IsSunken,
+                            Direction = each.Direction,
+                            LifeCount = each.LifeCount,
+                            ShipId = each.ShipId
+                        };
+                        gameBoat.Player = Game.PlayerB;
+                        db.GameBoats!.Add(gameBoat);
+                    }
+                }
+                else
+                {
+
+                    var player1BoardState = new PlayerBoardState()
+                    {
+                        BoardState = GetSerializedGameState(Board1),
+                        Player = Game.PlayerA
+                    };
+
+                    db.PlayerBoardStates.Add(player1BoardState);
+
+
+
+                    foreach (var each in Player1Ships)
+                    {
+                        var gameBoat = new GameBoat()
+                        {
+                            Name = each.Name,
+                            Size = each.Width,
+                            IsSunken = each.IsSunken,
+                            Direction = each.Direction,
+                            LifeCount = each.LifeCount,
+                            ShipId = each.ShipId
+                        };
+                        gameBoat.Player = Game.PlayerA;
+                        db.GameBoats!.Add(gameBoat);
+                    }
+                }
+
+                db.SaveChanges();
+
+                return "";
+            }
+
+            if (FileName == null)
+            {
+                FileName = "game";
+            }
             var gameOption = new GameOption()
             {
                 Name = FileName,
                 BoardWidth = Width,
                 BoardHeight = Height,
                 EBoatsCanTouch = GameRule,
-                ENextMoveAfterHit = NextMove,
+                ENextMoveAfterHit = NextMove
             };
             db.GameOptions.Add(gameOption);
             var playerA = new Player()
@@ -353,11 +410,12 @@ namespace GameBrain
 
 
             game.GameOption = gameOption;
-            db.Games.Add(game);
+            db.Games!.Add(game);
             db.SaveChanges();
 
-            playerA.Game = game;
-            playerB.Game = game;
+            GameId = game.GameId;
+            // playerA.Game = game;
+            // playerB.Game = game;
             foreach (var each in Player1Ships)
             {
                 var boat = new Boat()
@@ -375,13 +433,12 @@ namespace GameBrain
                     Name = each.Name,
                     Size = each.Width,
                     IsSunken = each.IsSunken,
-                    Player = playerB,
                     Direction = each.Direction,
                     LifeCount = each.LifeCount,
                     ShipId = each.ShipId
                 };
                 gameBoat.Player = playerB;
-                db.GameBoats.Add(gameBoat);
+                db.GameBoats!.Add(gameBoat);
             }
 
 
@@ -392,13 +449,12 @@ namespace GameBrain
                     Name = each.Name,
                     Size = each.Width,
                     IsSunken = each.IsSunken,
-                    Player = playerB,
                     Direction = each.Direction,
                     LifeCount = each.LifeCount,
                     ShipId = each.ShipId
                 };
                 gameBoat.Player = playerA;
-                db.GameBoats.Add(gameBoat);
+                db.GameBoats!.Add(gameBoat);
             }
 
             var playerABoardState = new PlayerBoardState()
@@ -417,6 +473,8 @@ namespace GameBrain
             // // this will actually save data to db
 
             db.SaveChanges();
+            Player1Id = playerA.PlayerId;
+            Player2Id = playerB.PlayerId;
             return "";
         }
 
@@ -426,28 +484,35 @@ namespace GameBrain
             var state2 = JsonSerializer.Deserialize<GameState>(board2);
 
             // restore actual state from deserialized state
-            NextMoveByX = state.NextMoveByX;
-            Board1 =  new CellState[state.Width, state.Height];
-            Board2 =  new CellState[state2.Width, state2.Height];
-
-            for (var x = 0; x < state.Width; x++)
+            if (state != null)
             {
-                for (var y = 0; y < state.Height; y++)
+                NextMoveByX = state.NextMoveByX;
+                Board1 = new CellState[state.Width, state.Height];
+                Board2 = new CellState[state2!.Width, state2.Height];
+
+                for (var x = 0; x < state.Width; x++)
                 {
-                    Board1[x, y] = state.Board1[x][y];
+                    for (var y = 0; y < state.Height; y++)
+                    {
+                        Board1[x, y] = state.Board[x][y];
+                    }
                 }
             }
-            for (var x = 0; x < state2.Width; x++)
+
+            for (var x = 0; x < state2!.Width; x++)
             {
                 for (var y = 0; y < state2.Height; y++)
                 {
-                    Board2[x, y] = state2.Board1[x][y];
+                    Board2[x, y] = state2.Board[x][y];
                 }
             }
             return "";
         }
 
-
+        public CellState GetCell(int x, int y, CellState[,] board)
+        {
+            return board[x, y];
+        }
 
     }
 

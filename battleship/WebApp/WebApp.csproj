@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DAL\DAL.csproj" />
+      <ProjectReference Include="..\GameBrain\GameBrain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.9">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\GameBoats\StartGame\StartGame.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\StartGame\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GamePlay\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameOptions\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameOptions\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameOptions\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameOptions\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameOptions\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="PlaceTheShips\Index.cshtml" />
+    </ItemGroup>
+
+</Project>

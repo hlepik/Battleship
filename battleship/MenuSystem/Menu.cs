@@ -16,8 +16,6 @@ namespace MenuSystem
 
         private Dictionary<string, MenuItem> MenuItems { get; set; } = new Dictionary<string, MenuItem>();
 
-
-        // private readonly MenuLevel _menuLevel;
         private int _menuLevel;
 
         private MenuItem? _menuItemReturnPrevious;
@@ -57,7 +55,7 @@ namespace MenuSystem
 
         public object? Title { get; set; }
 
-        public string RunMenu()
+        public string? RunMenu()
         {
 
             var userChoice = "";

@@ -1,0 +1,23 @@
+@page
+@model WebApp.Pages.NextMove.Index
+
+@{var player = "";}
+@if(Model.BattleShip.NextMoveByX )
+{
+    player = Model.BattleShip.Player1;
+}
+else
+{
+    player = Model.BattleShip.Player2;
+}
+<div class="container" align="center">
+    @if (Model.Message.Length > 1)
+    {
+        <div class="alert alert-danger" role="alert">@Model.Message</div>
+    }
+    <h1>@player turn </h1>
+
+    <div>Press ok to continue!</div>
+    <td><a class="nav-item" asp-route-id="@Model.Game?.GameId" asp-route-submit="ok">OK</a></td>
+
+</div>

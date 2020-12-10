@@ -1,7 +1,10 @@
 using System;
+using System.Data.Entity;
 using System.Linq;
 using DAL;
 using Domain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32.SafeHandles;
 
 namespace GameBrain
 {
@@ -12,7 +15,6 @@ namespace GameBrain
             using var db = new AppDbContext();
             var ship = new Ship();
             var game = new BattleShip();
-            var gameId = 0;
             var player1Id = 0;
             var player2Id = 0;
 
@@ -75,4 +77,5 @@ namespace GameBrain
             return game;
         }
     }
+
 }

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using BattleShipUi;
 using DAL;
 using Domain;
-using Domain.Enums;
 using GameBrain;
 using MenuSystem;
 using Microsoft.EntityFrameworkCore;
@@ -18,14 +15,9 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
+            using var db = new AppDbContext();
+            db.Database.Migrate();
 
-            // using (var db = new AppDbContext())
-            // {
-            //     foreach (var board in db.BoardStates!)
-            //     {
-            //         System.Console.WriteLine(board);
-            //     }
-            // }
 
             // for (int j = 0; j < 100; j++)
             // {
@@ -58,11 +50,6 @@ namespace ConsoleApp
             int green = 100;
             int blue = 255;
 
-            {
-                using var db = new AppDbContext();
-                db.Database.Migrate();
-
-            }
 
             Console.WriteAscii("BATTLESHIP", Color.FromArgb(red, green, blue));
 
@@ -74,10 +61,10 @@ namespace ConsoleApp
             );
 
             var menu1 = new Menu(1);
-            menu1.AddMenuItem(new MenuItem("BattleShip", "1", menu2.RunMenu));
+            menu1.AddMenuItem(new MenuItem("BattleShip", "1", menu2.RunMenu!));
 
             var menu = new Menu();
-            menu.AddMenuItem(new MenuItem("Choose game", "1", menu1.RunMenu));
+            menu.AddMenuItem(new MenuItem("Choose game", "1", menu1.RunMenu!));
 
             menu.RunMenu();
 
@@ -129,27 +116,24 @@ namespace ConsoleApp
         {
             Console.Clear();
             var menu = new Menu(3);
-
             menu.AddMenuItem(new MenuItem(
             $"Next move", userChoice: "N", () =>
             {
                 Console.Clear();
-                System.Console.WriteLine($"" +
-                                         $"{(game.NextMoveByX ? game.Player1 : game.Player2)}'s " +
-                                         $"turn! Press enter to continue... ");
+                System.Console.WriteLine($"{(game.NextMoveByX ? game.Player1 : game.Player2)}'s " +
+                                         "turn! Press enter to continue... ");
                 Console.ReadLine();
 
                 var board1 = game.GetBoard(game.Player1);
                 var board2 = game.GetBoard(game.Player2);
 
-                var userChoice = "";
 
                 Console.Clear();
-                var board = board2;
+                var board = board1;
 
                 if (game.NextMoveByX)
                 {
-                    board = board1;
+                    board = board2;
 
                 }
 
@@ -173,11 +157,11 @@ namespace ConsoleApp
                     BattleShipConsoleUi.DrawBoard(board2);
                 }
 
-                var x = 0;
-                var y = 0;
                 var bombText = "";
                 while (bombText.Length < 1)
                 {
+                    var y = 0;
+                    var x = 0;
                     do
                     {
                         if (game.PlayerType2 != EPlayerType.Ai || game.NextMoveByX)
@@ -189,10 +173,25 @@ namespace ConsoleApp
                         (x, y) = MoveCoordinates.GetMoveCoordinates(game);
                     } while (x > game.Width - 1 || y > game.Height - 1);
 
-                    bombText = game.MakeAMove(game, x, y, board);
+                    game.MakeAMove(x, y, board);
+                    if (!game.TextWhenMiss)
+                    {
+                        game.BoardAfterHit(x, y, game);
+                    }
+                    if (game.TextWhenMiss)
+                    {
+                        bombText = "You missed!";
+                    }else if(game.TextWhenHit)
+
+                    {
+                        bombText = "Hit!";
+                    }
+                    else
+                    {
+                        bombText = "Ship has been destroyed!";
+                    }
 
                 }
-
                 Console.Clear();
                 Console.ForegroundColor = Color.Purple;
                 System.Console.WriteLine(bombText);
@@ -211,7 +210,6 @@ namespace ConsoleApp
                 return "";
             }));
 
-
             Console.ForegroundColor = Color.Blue;
 
             menu.AddMenuItem(new MenuItem($"Save game", userChoice: "S",
@@ -219,29 +217,26 @@ namespace ConsoleApp
 
             menu.RunMenu();
 
+
             return "";
 
     }
 
-
-
         static string LoadGameAction()
         {
             var game = new BattleShip();
-            // var files = System.IO.Directory.EnumerateFiles(".", "*.json").ToList();
-            // for (int i = 0; i < files.Count; i++)
-            // {
-            //     Console.WriteLine($"{i} - {files[i]}");
-            // }
+
             using var db = new AppDbContext();
             int count = 1;
+
+
             foreach (var games in db.GameOptions)
             {
+                Console.ForegroundColor = Color.Blue;
                 Console.WriteLine($"{count } - {games.Name}");
                 count++;
             }
             var fileNumber = Console.ReadLine();
-            var fileName = "";
             count = 1;
             var gameOptionId = 0;
             foreach (var games in db.GameOptions){
@@ -250,14 +245,10 @@ namespace ConsoleApp
                 {
                     gameOptionId = games.GameOptionId;
                 }
+
                 count++;
             }
-
-            // var fileName = files[int.Parse(fileNo!.Trim())];
-
             game = GetGame.GetGameFromDb(gameOptionId);
-            // game.SetGameStateFromJsonString(jsonString);
-
             PlayGame(game);
             return "";
         }

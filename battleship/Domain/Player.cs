@@ -8,12 +8,15 @@ namespace Domain
     {
         public int PlayerId { get; set; }
         [MaxLength(128)]
+        [MinLength(2)]
         public string Name { get; set; } = null!;
 
         public EPlayerType EPlayerType { get; set; }
 
         public Game Game { get; set; } = null!;
         public int? GameId { get; set; }
+
+        public ICollection<Boat> Boats { get; set; } = null!;
 
         public ICollection<PlayerBoardState> PlayerBoardStates { get; set; } = null!;
         public ICollection<GameBoat> GameBoats { get; set; } = null!;

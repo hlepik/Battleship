@@ -1,0 +1,136 @@
+
+@page
+@using GameBrain
+@using Domain
+@using System.Collections
+@model WebApp.Pages.GamePlay.Index
+
+@{var player = "";}
+@if(Model.BattleShip.NextMoveByX )
+{
+    player = Model.BattleShip.Player1;
+}
+else
+{
+    player = Model.BattleShip.Player2;
+}
+
+<h1>@player turn </h1>
+
+@functions
+{
+
+    public bool Hidden { get; set; }
+    string GetCellContent(CellState cell)
+    {
+        var res = "";
+
+        if (cell != null)
+        {
+            if (cell.Ship)
+            {
+                res = Hidden ? "":"🟦";
+            }
+            if (cell.Bomb)
+            {
+                res =  "🟥";
+            }
+            if (cell.Miss)
+            {
+                res = "•";
+            }
+            if (cell.Empty)
+            {
+                res = "&nbsp;";
+            }
+        }
+
+        return res;
+    }
+
+
+}
+<div class="container" align="center">
+ @if (Model.Message.Length > 1)
+    {
+        <div class="alert alert-danger" role="alert">@Model.Message</div>
+    }
+    <div class="table-layout text-center">
+        <table class="no-boarder">
+           @{ Hidden = true; }
+
+            @for (int x = 0; x < Model.BattleShip.Width + 1; x++)
+            {
+                if (x == 0)
+                {
+                    <td> @Html.Raw("&nbsp;")</td>
+                }
+                else
+                {
+                    <td class="no-boarder"> @Html.Raw(x)</td>
+                }
+            }
+
+
+            @for (int y = 0; y < Model.BattleShip.Width; y++)
+            {
+
+                char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+                <tr>
+
+                    <td class="no-boarder">
+                        @Html.Raw(alpha[y])
+                    </td>
+
+                    @for (int x = 0; x < Model.BattleShip.Height; x++)
+                    {
+                        <td class="table table-bordered border-size"
+
+                            onclick="window.location.href = '?x=@x&y=@y&id=@Model.Game?.GameId'" style="cursor: pointer">
+                            @Html.Raw(GetCellContent(Model.BattleShip.GetCell(x, y, Model.BattleShip.NextMoveByX ? Model.BattleShip.Board2: Model.BattleShip.Board1)))
+                        </td>
+                    }
+                </tr>
+            }
+            @{ Hidden = false; }
+        </table>
+
+        <table class="no-boarder">
+
+            @for (int x = 0; x < Model.BattleShip.Width + 1; x++)
+            {
+                if (x == 0)
+                {
+                    <td> @Html.Raw("&nbsp;")</td>
+                }
+                else
+                {
+                    <td class="no-boarder"> @Html.Raw(x)</td>
+                }
+            }
+
+
+            @for (int y = 0; y < Model.BattleShip.Width; y++)
+            {
+
+                char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+                <tr>
+
+                    <td class="no-boarder">
+                        @Html.Raw(alpha[y])
+                    </td>
+
+                    @for (int x = 0; x < Model.BattleShip.Height; x++)
+                    {
+                        <td class="table table-bordered border-size">
+                            @Html.Raw(GetCellContent(Model.BattleShip.GetCell(x, y, Model.BattleShip.NextMoveByX ? Model.BattleShip.Board1: Model.BattleShip.Board2)))
+                        </td>
+                    }
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>
+
+

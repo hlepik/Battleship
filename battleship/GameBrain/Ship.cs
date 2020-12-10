@@ -12,6 +12,7 @@ namespace GameBrain
         public int LifeCount { get; set; }
         public bool IsSunken { get; set; }
         public string Direction { get; set; } = null!;
+        public bool Inserted { get; set; }
 
         public Ship(string name, int size, string direction, int shipId, bool isSunken)
         {
@@ -22,7 +23,13 @@ namespace GameBrain
             ShipId = shipId;
             IsSunken = isSunken;
         }
-
+        public Ship(string name, int size, int shipId, bool inserted)
+        {
+            Name = name;
+            Width = size;
+            ShipId = shipId;
+            Inserted = inserted;
+        }
         public Ship()
         {
 

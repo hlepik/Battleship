@@ -12,7 +12,9 @@ namespace BattleShipUi
         public string BoatsLocation(BattleShip game, string playerName)
         {
             var place = new CanInsertBoat();
-            var boats = new BoatCount();
+            var boat = new BoatCount();
+
+            // var boats = new BoatCount();
             game.CanInsert = true;
 
             Console.Clear();
@@ -21,7 +23,7 @@ namespace BattleShipUi
                 System.Console.WriteLine($"{playerName} please insert your ships!");
             }
 
-            var allBoats = boats.BoatsCount(game).OrderBy(x => x.Width)
+            var allBoats = boat.BoatsCount(game.Width, game.Height).OrderBy(x => x.Width)
                 .Reverse();
             foreach (var each in allBoats)
             {

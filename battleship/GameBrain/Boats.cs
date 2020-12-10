@@ -7,6 +7,7 @@ namespace GameBrain
         {
             Name = "Patrol";
             Width = 1;
+            ShipId = 1;
         }
     }
     public class Cruiser : Ship
@@ -15,6 +16,7 @@ namespace GameBrain
         {
             Name = "Cruiser";
             Width = 2;
+            ShipId = 2;
         }
 
     }

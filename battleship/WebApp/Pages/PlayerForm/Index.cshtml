@@ -1,0 +1,58 @@
+@page
+@using Domain.Enums
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model WebApp.Pages.PlayerForm.Index
+
+
+<form method="post">
+@if (Model.Message.Length > 1)
+    {
+        <div class="alert alert-danger" role="alert">@Model.Message</div>
+    }
+    <div class="col-5">
+        <div class="form-group">
+            <label  asp-for="PlayerA">Player A</label>
+            <input asp-for="PlayerA"  class="form-control" id="Name" placeholder="Player A">
+             <span asp-validation-for="PlayerA" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label  asp-for="PlayerB">Player B</label>
+            <input asp-for="PlayerB" class="form-control" placeholder="Player B">
+            <span asp-validation-for="PlayerB" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label  asp-for="Width">Select boaord width</label>
+            <input asp-for="Width" value="5" min="5" max="25" class="form-control">
+        </div>
+        <div class="form-group">
+            <label  asp-for="Height">Select board height</label>
+            <input asp-for="Height" value="5" min="5" max="25" class="form-control">
+        </div>
+         <div class="form-group">
+            <label  asp-for="GameRule"> Select if boat can touch</label>
+                <select class="form-control" asp-for="GameRule">
+                <option selected="selected" value="0">Yes</option>
+                    <option value="1">Corner</option>
+                     <option value="2">No</option>
+                </select>
+             </div>
+
+        <div class="form-group">
+            <label  asp-for="NextMove"> Select who will make the next move after hit</label>
+            <select class="form-control" asp-for="NextMove">
+                <option selected="selected" value="0">Same player</option>
+                <option value="1">Other player</option>
+            </select>
+
+        </div>
+        <div class="form-group">
+            <label  asp-for="GameName">Enter your game name</label>
+            <input asp-for="GameName" class="form-control" placeholder="Enter your game name">
+            <span asp-validation-for="GameName" class="text-danger"></span>
+        </div>
+
+        <div class="col">
+            <button type="submit" class="btn btn-primary">⛴Start</button>
+        </div>
+    </div>
+</form>

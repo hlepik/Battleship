@@ -4,9 +4,9 @@ namespace GameBrain
 {
     public class BoatSizes
     {
-        public static int CalculateBoats(BattleShip game)
+        public static int CalculateBoats(int width, int height)
         {
-            var size = game.Height * game.Width / 5;
+            var size = height * width / 5;
             var biggestBoat = 0;
 
             if (size <= 7)

@@ -8,10 +8,9 @@ namespace DAL
     public class AppDbContext : DbContext
     {
         public DbSet<Boat> Boats { get; set; } = null!;
-        public DbSet<Game> Games { get; set; } = null!;
-        public DbSet<GameBoat> GameBoats { get; set; } = null!;
+        public DbSet<Game>? Games { get; set; } = null!;
+        public DbSet<GameBoat>? GameBoats { get; set; } = null!;
         public DbSet<GameOption> GameOptions { get; set; } = null!;
-        public DbSet<GameOptionBoat> GameOptionBoats { get; set; } = null!;
         public DbSet<Player> Players{ get; set; } = null!;
         public DbSet<PlayerBoardState> PlayerBoardStates { get; set; } = null!;
 
@@ -20,8 +19,8 @@ namespace DAL
             builder =>
             {
                 builder
-                    .AddFilter("Microsoft", LogLevel.Information)
-                    .AddConsole();
+                    .AddFilter("Microsoft", LogLevel.Information);
+
             }
         );
 

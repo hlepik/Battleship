@@ -5,10 +5,10 @@ namespace GameBrain
 {
     public class BoatCount
     {
-        public List<Ship> BoatsCount(BattleShip game)
+        public List<Ship> BoatsCount(int width, int height)
         {
 
-            var size = BoatSizes.CalculateBoats(game);
+            var size = BoatSizes.CalculateBoats(width, height);
             List<Ship> boats = new List<Ship>();
 
             boats.Add(new Patrol());

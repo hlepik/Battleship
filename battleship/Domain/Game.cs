@@ -15,12 +15,13 @@ namespace Domain
 
         // see halb, peaks olema piirang peal
         [MaxLength(128)]
-        public string Description { get; set; } = DateTime.Now.ToLongDateString();
+        public string? Date { get; set; }
 
         public int PlayerAId { get; set; }
+        [MaxLength(64)]
         public Player PlayerA { get; set; } = null!;
-
         public int PlayerBId { get; set; }
+        [MaxLength(64)]
         public Player PlayerB { get; set; } = null!;
 
     }
