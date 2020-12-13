@@ -22,8 +22,6 @@ namespace WebApp.Pages.GamePlay
 
         }
         public Game? Game { get; set; }
-        public Player? Player1 { get; set; }
-        public Player? Player2 { get; set; }
         public BattleShip BattleShip { get; set; } = new BattleShip();
 
         public string Message { get; set; } = "";
@@ -38,15 +36,10 @@ namespace WebApp.Pages.GamePlay
                     BoardState = BattleShip.GetSerializedGameState(BattleShip.Board2)
                 };
                 _context.PlayerBoardStates.Add(boardState);
-                Player playerMove = Player2!;
-                if (BattleShip.NextMoveByX)
-                {
-                    playerMove = Player1!;
-                }
 
                 if (!BattleShip.TextWhenMiss)
                 {
-                    foreach (var each in playerMove.GameBoats.Where(x => x.ShipId == BattleShip.ShipId))
+                    foreach (var each in Game.PlayerB.GameBoats.Where(x => x.ShipId == BattleShip.ShipId))
                     {
                         each.IsSunken = BattleShip.Player2Ships.Where(x => x.ShipId == BattleShip.ShipId)
                             .Select(x => x.IsSunken).FirstOrDefault();
@@ -82,20 +75,17 @@ namespace WebApp.Pages.GamePlay
         {
 
             Game = await _context.Games!
-                .Where(p => p.GameId == id)
                 .Include(p => p.GameOption)
                 .Include(p => p.PlayerA)
+                .ThenInclude(p=>p.PlayerBoardStates)
+                .Include(p => p.PlayerA)
+                .ThenInclude(p =>p.GameBoats)
                 .Include(p => p.PlayerB)
-                .FirstOrDefaultAsync();
+                .ThenInclude(p=>p.PlayerBoardStates)
+                .Include(p => p.PlayerB)
+                .ThenInclude(p =>p.GameBoats)
+                .FirstOrDefaultAsync(p => p.GameId == id);
 
-            Player1 = _context.Players
-                .Include(p => p.PlayerBoardStates)
-                .Include(p=>p.GameBoats)
-                .FirstOrDefault(p => p.PlayerId == Game.PlayerAId);
-            Player2 = _context.Players
-                .Include(p => p.PlayerBoardStates)
-                .Include(p=>p.GameBoats)
-                .FirstOrDefault(p => p.PlayerId == Game.PlayerBId);
 
             BattleShip.Width = Game.GameOption.BoardWidth;
             BattleShip.Height = Game.GameOption.BoardHeight;
@@ -105,19 +95,19 @@ namespace WebApp.Pages.GamePlay
             BattleShip.NextMoveByX = Game.NextMoveByX;
             BattleShip.PlayerType2 = Game.PlayerB.EPlayerType;
 
-            foreach (var each in Player1!.GameBoats)
+            foreach (var each in Game.PlayerA.GameBoats)
             {
                 BattleShip.Player1Ships.Add(new Ship(each.Name, each.Size, each.Direction, each.ShipId, each.IsSunken, each.LifeCount));
             }
 
-            foreach (var each in Player2!.GameBoats)
+            foreach (var each in Game.PlayerB.GameBoats)
             {
                 BattleShip.Player2Ships.Add(new Ship(each.Name, each.Size, each.Direction, each.ShipId, each.IsSunken, each.LifeCount));
 
             }
 
-            var boardState2 = Player2!.PlayerBoardStates.Select(p => p.BoardState).LastOrDefault();
-            var boardState1 = Player1!.PlayerBoardStates.Select(p => p.BoardState).LastOrDefault();
+            var boardState2 = Game.PlayerB.PlayerBoardStates.Select(p => p.BoardState).LastOrDefault();
+            var boardState1 =Game.PlayerA.PlayerBoardStates.Select(p => p.BoardState).LastOrDefault();
             BattleShip.SetGameStateFromJsonString(boardState1!, BattleShip.Player1);
             BattleShip.SetGameStateFromJsonString(boardState2!, BattleShip.Player2);
             var player = BattleShip.Player1;

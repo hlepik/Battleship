@@ -54,8 +54,8 @@ namespace WebApp.Pages.PlaceTheBoats
         {
 
             var boardState = BattleShip.NextMoveByX
-                ? Player1!.PlayerBoardStates.Select(p => p.BoardState).FirstOrDefault()
-                : Player2!.PlayerBoardStates.Select(p => p.BoardState).FirstOrDefault();
+                ? Game!.PlayerA.PlayerBoardStates.Select(p => p.BoardState).FirstOrDefault()
+                : Game!.PlayerB.PlayerBoardStates.Select(p => p.BoardState).FirstOrDefault();
             BattleShip.SetGameStateFromJsonString(boardState, player);
 
             var x = 0;
@@ -163,17 +163,10 @@ namespace WebApp.Pages.PlaceTheBoats
                 .Where(p => p.GameId == id)
                 .Include(p => p.GameOption)
                 .Include(p => p.PlayerA)
+                .ThenInclude(p => p.PlayerBoardStates)
                 .Include(p => p.PlayerB)
+                .ThenInclude(p => p.PlayerBoardStates)
                 .FirstOrDefaultAsync();
-
-            Player1 = _context.Players
-                .Include(p => p.PlayerBoardStates)
-                .Include(p =>p.Boats)
-                .FirstOrDefault(p => p.PlayerId == Game.PlayerAId);
-            Player2 = _context.Players
-                .Include(p => p.PlayerBoardStates)
-                .Include(p =>p.Boats)
-                .FirstOrDefault(p => p.PlayerId == Game.PlayerBId);
 
             BattleShip.Width = Game.GameOption.BoardWidth;
             BattleShip.Height = Game.GameOption.BoardHeight;
@@ -192,8 +185,8 @@ namespace WebApp.Pages.PlaceTheBoats
                 playerId = Game.PlayerB.PlayerId;
             }
 
-            var boardState1 = Player1!.PlayerBoardStates.Select(p => p.BoardState).LastOrDefault();
-            var boardState2 = Player2!.PlayerBoardStates.Select(p => p.BoardState).LastOrDefault();
+            var boardState1 = Game.PlayerA.PlayerBoardStates.Select(p => p.BoardState).LastOrDefault();
+            var boardState2 = Game.PlayerB.PlayerBoardStates.Select(p => p.BoardState).LastOrDefault();
 
             BattleShip.SetGameStateFromJsonString(boardState1!, Game.PlayerA.Name);
             BattleShip.SetGameStateFromJsonString(boardState2!, Game.PlayerB.Name);
