@@ -122,7 +122,7 @@ namespace GameBrain
                             game.CanInsert = false;
                             break;
                         }
-                        if (No == game.GameRule && board[i, j].Empty == true && _aroundShip)
+                        if (No == game.GameRule && board[i, j].Empty && _aroundShip)
                         {
                             board[i, j].Miss = true;
                         }

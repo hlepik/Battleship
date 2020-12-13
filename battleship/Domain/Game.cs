@@ -12,6 +12,7 @@ namespace Domain
 
         public int GameOptionId { get; set; }
         public GameOption GameOption { get; set; } = null!;
+        public bool NextMoveByX { get; set; } = true;
 
         // see halb, peaks olema piirang peal
         [MaxLength(128)]

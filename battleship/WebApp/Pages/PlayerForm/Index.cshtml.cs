@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
+using System.Globalization;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Enums;
 using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace WebApp.Pages.PlayerForm
@@ -24,6 +23,7 @@ namespace WebApp.Pages.PlayerForm
         public string Message { get; set; } = "";
         [BindProperty]public EBoatsCanTouch GameRule { get; set; }
         [BindProperty]public ENextMoveAfterHit NextMove { get; set; }
+        public string Ai { get; set; } = "";
         public CellState[,] Board1 { get; set; } = null!;
         public CellState[,] Board2 { get; set; } = null!;
         public List<Ship> Boats { get; set; } = null!;
@@ -41,8 +41,25 @@ namespace WebApp.Pages.PlayerForm
             _logger = logger;
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task OnGetAsync(string id)
         {
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                Ai = "AI";
+                PlayerB = "AI";
+            }
+        }
+
+        public async Task<IActionResult> OnPostAsync(string id)
+        {
+
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                PlayerB = "AI";
+                Ai = "AI";
+            }
+
+
             var boats = new BoatCount();
 
             Battleship.Width = Width;
@@ -58,11 +75,12 @@ namespace WebApp.Pages.PlayerForm
                 Message = "Player names can't be same!";
                 return Page();
             }
-            if (!ModelState.IsValid)
+
+            if (PlayerB == "AI" && string.IsNullOrWhiteSpace(GameName) || string.IsNullOrWhiteSpace(PlayerA)|| GameName.Length <2 ||
+                GameName.Length > 128 || PlayerA.Length < 2 || PlayerA.Length > 128)
             {
                 return Page();
             }
-
 
             var gameOption = new GameOption()
             {
@@ -73,14 +91,19 @@ namespace WebApp.Pages.PlayerForm
                 Name = GameName
             };
             _context.Add(gameOption);
+
             var playerA = new Player()
             {
-                Name = PlayerA
+                Name = PlayerA,
             };
             var playerB = new Player()
             {
-                Name = PlayerB
+                Name = PlayerB,
             };
+            if (!string.IsNullOrWhiteSpace(Ai))
+            {
+                playerB.EPlayerType = EPlayerType.Ai;
+            }
 
             _context.Players.Add(playerB);
             _context.Players.Add(playerA);
@@ -110,7 +133,7 @@ namespace WebApp.Pages.PlayerForm
             }
             var game = new Game()
             {
-                Date = DateTime.Now.ToString(),
+                Date = DateTime.Now.ToString(CultureInfo.CurrentCulture),
                 GameOptionId = gameOption.GameOptionId,
                 PlayerAId = playerA.PlayerId,
                 PlayerBId = playerB.PlayerId
@@ -119,14 +142,18 @@ namespace WebApp.Pages.PlayerForm
             var playerABoardState = new PlayerBoardState()
             {
                 BoardState = Battleship.GetSerializedGameState(Board1),
+                PlayerId = playerA.PlayerId
             };
             var playerBBoardState = new PlayerBoardState()
             {
                 BoardState = Battleship.GetSerializedGameState(Board2),
+                PlayerId = playerB.PlayerId
             };
 
             playerABoardState.PlayerId = playerA.PlayerId;
             playerBBoardState.PlayerId = playerB.PlayerId;
+
+
             _context.PlayerBoardStates.Add(playerABoardState);
             _context.PlayerBoardStates.Add(playerBBoardState);
             _context.Games!.Add(game);
@@ -135,7 +162,7 @@ namespace WebApp.Pages.PlayerForm
             playerB.GameId = game.GameId;
 
             await _context.SaveChangesAsync();
-
+            Ai = null!;
             return RedirectToPage("/PlaceTheBoats/Index", new {id = game.GameId});
         }
     }

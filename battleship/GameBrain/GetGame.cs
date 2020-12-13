@@ -31,6 +31,7 @@ namespace GameBrain
 
                 player1Id = games.PlayerAId;
                 player2Id = games.PlayerBId;
+                game.NextMoveByX = games.NextMoveByX;
             }
             foreach (var players in db.Players.Where(x => x.PlayerId == player1Id))
             {
@@ -63,16 +64,16 @@ namespace GameBrain
             foreach (var boat in db.GameBoats.Where(x => x.PlayerId == player1Id))
             {
 
-                game.Player1Ships.Add(new Ship(boat.Name,boat.Size,boat.Direction,boat.ShipId, boat.IsSunken));
-                ship.LifeCount = boat.LifeCount;
+                game.Player1Ships.Add(new Ship(boat.Name,boat.Size,boat.Direction,boat.ShipId, boat.IsSunken, boat.LifeCount));
             }
             foreach (var boat in db.GameBoats.Where(x => x.PlayerId == player2Id))
             {
 
-                game.Player2Ships.Add(new Ship(boat.Name,boat.Size,boat.Direction,boat.ShipId, boat.IsSunken));
+                game.Player2Ships.Add(new Ship(boat.Name,boat.Size,boat.Direction,boat.ShipId, boat.IsSunken, boat.LifeCount));
                 ship.LifeCount = boat.LifeCount;
             }
-            game.SetGameStateFromJsonString(boardState1, boardState2);
+            game.SetGameStateFromJsonString(boardState1, game.Player1);
+            game.SetGameStateFromJsonString(boardState2, game.Player2);
 
             return game;
         }

@@ -14,12 +14,12 @@ namespace GameBrain
         public string Direction { get; set; } = null!;
         public bool Inserted { get; set; }
 
-        public Ship(string name, int size, string direction, int shipId, bool isSunken)
+        public Ship(string name, int size, string direction, int shipId, bool isSunken, int lifeCount)
         {
             Name = name;
             Width = size;
             Direction = direction;
-            LifeCount = size;
+            LifeCount = lifeCount;
             ShipId = shipId;
             IsSunken = isSunken;
         }

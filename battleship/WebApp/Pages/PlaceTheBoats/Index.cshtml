@@ -11,82 +11,89 @@ else
 {
     player = Model.BattleShip.Player2;
 }
-<h1>@player choose your boat locations</h1>
-@functions
-{
 
-    string GetCellContent(CellState cell)
+<div class="container">
+    <h2>@player choose your boat locations</h2>
+    @functions
     {
-        var res = "";
 
-        if (cell != null)
+        string GetCellContent(CellState cell)
         {
-            if (cell.Ship)
+            var res = "";
+
+            if (cell != null)
             {
-                res = "🟦";
+                if (cell.Ship)
+                {
+                    res = "🟦";
+                }
+
+                if (cell.Empty)
+                {
+                    res = "&nbsp;";
+                }
             }
 
-            if (cell.Empty)
-            {
-                res = "&nbsp;";
-            }
+            return res;
         }
 
-        return res;
-    }
-
-
-}
-<div class="container" align="center">
- @if (Model.Message.Length > 1)
-    {
-        <div class="alert alert-danger" role="alert">@Model.Message</div>
-    }
-<tr>
-    <div class="text-label">Choose your boat</div>
-
-
-
-    @foreach (var each in Model.GameShips)
-    {
-        var boat = "";
-        for (int i = 0; i < each.Width; i++)
-        {
-            if (each.Inserted)
-            {
-                boat += "🟥";
-            }
-            else
-            {
-                boat += "🟦";
-            }
-
-        }
-        if (each.Inserted)
-        {
-            <td><a >@each.Name @boat </a></td>
-
-        }
-        else
-        {
-            <td><a class="list-group-item" asp-route-id="@Model.Game?.GameId"  asp-route-dir="@Model.Direction" asp-route-ship="@each.ShipId" >@each.Name @boat </a></td>
-
-        }
 
     }
+    <div class="container">
+        @if (Model.Message.Length > 1)
+        {
+            <div class="alert alert-danger" role="alert">@Model.Message</div>
+        }
 
-</tr>
+            <div class="row">
+            <div class="col text-right">
+             <div class="text-label">Choose your boat</div>
+            <tr>
+            @foreach (var each in Model.GameShips)
+            {
+                var boat = "";
+                for (int i = 0; i < each.Width; i++)
+                {
+                    if (each.Inserted || Model.Random != null)
+                    {
+                        boat += "🟥";
+                    }
+                    else
+                    {
+                        boat += "🟦";
+                    }
+                }
+                if (each.Inserted || Model.Random != null)
+                {
+                    <td><a>@each.Name @boat </a></td>
 
-<tr>
- <div class="text-label" >Choose boat direction</div>
-    <td><a class="nav-item" asp-route-id="@Model.Game?.GameId" asp-route-direction="@Model.Direction"  asp-route-ship="@Model.CurrentBoatId" asp-route-dir="R">Right ➡️️</a></td>
-    <td><a class="nav-item" asp-route-id="@Model.Game?.GameId" asp-route-direction="@Model.Direction" asp-route-ship="@Model.CurrentBoatId" asp-route-dir="D">Down ⬇️</a></td>
-</tr>
+                }
+                else
+                {
+                    <td><a class="list-group list-group-flush" asp-route-id="@Model.Game?.GameId"  asp-route-dir="@Model.Direction" asp-route-ship="@each.ShipId" >@each.Name @boat </a></td>
+
+                }
+
+            }
+
+        </tr>
+
+        <tr>
+            <div class="text-label" >Choose boat direction</div>
+            <td><a  asp-route-id="@Model.Game?.GameId" asp-route-direction="@Model.Direction"  asp-route-ship="@Model.CurrentBoatId" asp-route-dir="R">Right ➡️️</a></td>
+            <td><a asp-route-id="@Model.Game?.GameId" asp-route-direction="@Model.Direction" asp-route-ship="@Model.CurrentBoatId" asp-route-dir="D">Down ⬇️</a></td>
+        </tr><br>
+            <tr><br>
+                <td><a class="btn btn-outline-info" asp-route-id="@Model.Game?.GameId" asp-route-rand="@Model.Random" asp-route-random="r">Randomise️</a></td>
+
+            </tr>
+            <tr>
+                <td><a class="btn btn-outline-info" asp-route-id="@Model.Game?.GameId" asp-route-random="@Model.Random" asp-route-red="@Model.Ready" asp-route-ready="r">Ready</a></td>
+            </tr>
 
 
-
-<div class="col-4" align="center"></div>
-    <div class="table-layout text-center">
+    </div>
+    <div class="col text-center">
         <table class="no-boarder">
 
             @for (int x = 0; x < Model.BattleShip.Width + 1; x++)
@@ -115,16 +122,16 @@ else
                     @for (int x = 0; x < Model.BattleShip.Height; x++)
                     {
 
+                        <td class="table table-bordered border-size text-center"
 
-
-                        <td class="table table-bordered border-size"
-
-                             onclick="window.location.href = '?dir=@Model.Direction&ship=@Model.CurrentBoatId&x=@x&y=@y&id=@Model.Game?.GameId'" style="cursor: pointer">
+                            onclick="window.location.href = '?dir=@Model.Direction&ship=@Model.CurrentBoatId&x=@x&y=@y&id=@Model.Game?.GameId&random=@Model.Random&ready=@Model.Ready'" style="cursor: pointer">
                             @Html.Raw(GetCellContent(Model.BattleShip.GetCell(x, y, Model.BattleShip.NextMoveByX ? Model.BattleShip.Board1: Model.BattleShip.Board2)))
                         </td>
                     }
                 </tr>
             }
         </table>
+        </div>
     </div>
+</div>
 </div>

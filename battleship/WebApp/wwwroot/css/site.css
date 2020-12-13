@@ -1,11 +1,56 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 h1{
-  color: darkslateblue;;
+  color: darkslateblue;
+  padding-bottom: 3rem;
+  text-decoration: none;
+  font-size: 27px;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-weight: bold;
+  font-family: Luminari, sans-serif, sans-serif;
+  text-shadow: 0 4px 0 rgba(0, 0, 0, 1);
+  text-align: center;
+
+
+}
+h2{
+  color: darkslateblue;
+  text-align: center!important;
+  padding-bottom: 2rem;
+}
+
+.table-heading{
+  color: #8fd19e;
 }
 .text-label{
-  color: palevioletred;
+  color: #117a8b!important;
 
+  text-align: right;
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+
+}
+.start-button{
+  padding-left: 15rem;
+}
+.button-padding{
+  padding-left: 5rem;
+}
+.table-layout{
+  color: #0f6674;
+}
+.buttons{
+  align-items: center;
+  color: #0f6674;
+  padding-bottom: 3rem;
+  padding-right: 2rem;
+  padding-left: 2rem;
+
+}
+.form-group{
+  color: #0f6674;
+  align-items: center;
 }
 
 .no-boarder{

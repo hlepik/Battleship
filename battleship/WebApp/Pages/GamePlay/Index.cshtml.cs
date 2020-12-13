@@ -1,16 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain;
-using Domain.Enums;
 using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 
 namespace WebApp.Pages.GamePlay
 {
@@ -26,115 +22,155 @@ namespace WebApp.Pages.GamePlay
 
         }
         public Game? Game { get; set; }
+        public Player? Player1 { get; set; }
+        public Player? Player2 { get; set; }
         public BattleShip BattleShip { get; set; } = new BattleShip();
 
         public string Message { get; set; } = "";
 
-
-        public async Task<IActionResult> OnGetAsync(int id, int? x, int? y)
+        public void SaveGameToDb(string player)
         {
-
-            Game = await _context.Games
-                .Where(p => p.GameId == id)
-                .Include(p => p.GameOption)
-                .Include(p => p.PlayerA)
-                .ThenInclude(p =>p.PlayerBoardStates).Take(1)
-                .Include(p => p.PlayerB)
-                .ThenInclude(p =>p.PlayerBoardStates).Take(1)
-                .FirstOrDefaultAsync();
-
-
-            var boardState1 = Game.PlayerA.PlayerBoardStates.Select(x => x.BoardState).Last();
-            var boardState2 = Game.PlayerB.PlayerBoardStates.Select(x => x.BoardState).Last();
-
-            BattleShip.Width = Game.GameOption.BoardWidth;
-            BattleShip.Height = Game.GameOption.BoardHeight;
-            BattleShip.Player1 = Game.PlayerA.Name;
-            BattleShip.Player2 = Game.PlayerB.Name;
-            BattleShip.GameRule = Game.GameOption.EBoatsCanTouch;
-
-            BattleShip.SetGameStateFromJsonString(boardState1, boardState2);
-
-            var player = BattleShip.Player1;
-            var playerBoard = BattleShip.Board2;
-            if (!BattleShip.NextMoveByX)
+            if (player == Game!.PlayerA.Name)
             {
-                player = BattleShip.Player2;
-                playerBoard = BattleShip.Board1;
+                var boardState = new PlayerBoardState()
+                {
+                    PlayerId = Game!.PlayerBId,
+                    BoardState = BattleShip.GetSerializedGameState(BattleShip.Board2)
+                };
+                _context.PlayerBoardStates.Add(boardState);
+                Player playerMove = Player2!;
+                if (BattleShip.NextMoveByX)
+                {
+                    playerMove = Player1!;
+                }
+
+                if (!BattleShip.TextWhenMiss)
+                {
+                    foreach (var each in playerMove.GameBoats.Where(x => x.ShipId == BattleShip.ShipId))
+                    {
+                        each.IsSunken = BattleShip.Player2Ships.Where(x => x.ShipId == BattleShip.ShipId)
+                            .Select(x => x.IsSunken).FirstOrDefault();
+                        each.LifeCount = BattleShip.Player2Ships.Where(x => x.ShipId == BattleShip.ShipId)
+                            .Select(x => x.LifeCount).FirstOrDefault();
+                    }
+                }
             }
-
-            if (x != null && y != null)
+            else
             {
-
-                BattleShip.MakeAMove(x.Value, y.Value, playerBoard);
-
                 var boardState = new PlayerBoardState()
                 {
                     PlayerId = Game.PlayerAId,
                     BoardState = BattleShip.GetSerializedGameState(BattleShip.Board1)
                 };
                 _context.PlayerBoardStates.Add(boardState);
-
-                boardState = new PlayerBoardState()
+                if (!BattleShip.TextWhenMiss)
                 {
-                    PlayerId = Game.PlayerBId,
-                    BoardState = BattleShip.GetSerializedGameState(BattleShip.Board2)
-                };
-                _context.PlayerBoardStates.Add(boardState);
-
-
-                if (BattleShip.Player1 == player)
-                {
-                    //see on t[hi juuuuu
-                    foreach (var each in BattleShip.Player2Ships)
+                    foreach (var each in Game.PlayerA.GameBoats.Where(x => x.ShipId == BattleShip.ShipId))
                     {
-                        var gameBoat = new GameBoat()
-                        {
-                            Name = each.Name,
-                            Size = each.Width,
-                            IsSunken = each.IsSunken,
-                            Direction = each.Direction,
-                            LifeCount = each.LifeCount,
-                            ShipId = each.ShipId
-                        };
-                        gameBoat.Player = Game.PlayerA;
-                        _context.GameBoats!.Add(gameBoat);
+                        each.IsSunken = BattleShip.Player1Ships.Where(x => x.ShipId == BattleShip.ShipId)
+                            .Select(x => x.IsSunken).FirstOrDefault();
+                        each.LifeCount = BattleShip.Player1Ships.Where(x => x.ShipId == BattleShip.ShipId)
+                            .Select(x => x.LifeCount).FirstOrDefault();
                     }
                 }
-                else
-                {
-                    foreach (var each in BattleShip.Player1Ships)
-                    {
-                        var gameBoat = new GameBoat()
-                        {
-                            Name = each.Name,
-                            Size = each.Width,
-                            IsSunken = each.IsSunken,
-                            Direction = each.Direction,
-                            LifeCount = each.LifeCount,
-                            ShipId = each.ShipId
-                        };
-                        gameBoat.Player = Game.PlayerB;
-                        _context.GameBoats!.Add(gameBoat);
-                    }
-                }
+            }
+        }
+
+
+
+        public async Task<IActionResult> OnGetAsync(int id, int? x, int? y)
+        {
+
+            Game = await _context.Games!
+                .Where(p => p.GameId == id)
+                .Include(p => p.GameOption)
+                .Include(p => p.PlayerA)
+                .Include(p => p.PlayerB)
+                .FirstOrDefaultAsync();
+
+            Player1 = _context.Players
+                .Include(p => p.PlayerBoardStates)
+                .Include(p=>p.GameBoats)
+                .FirstOrDefault(p => p.PlayerId == Game.PlayerAId);
+            Player2 = _context.Players
+                .Include(p => p.PlayerBoardStates)
+                .Include(p=>p.GameBoats)
+                .FirstOrDefault(p => p.PlayerId == Game.PlayerBId);
+
+            BattleShip.Width = Game.GameOption.BoardWidth;
+            BattleShip.Height = Game.GameOption.BoardHeight;
+            BattleShip.Player1 = Game.PlayerA.Name;
+            BattleShip.Player2 = Game.PlayerB.Name;
+            BattleShip.GameRule = Game.GameOption.EBoatsCanTouch;
+            BattleShip.NextMoveByX = Game.NextMoveByX;
+            BattleShip.PlayerType2 = Game.PlayerB.EPlayerType;
+
+            foreach (var each in Player1!.GameBoats)
+            {
+                BattleShip.Player1Ships.Add(new Ship(each.Name, each.Size, each.Direction, each.ShipId, each.IsSunken, each.LifeCount));
+            }
+
+            foreach (var each in Player2!.GameBoats)
+            {
+                BattleShip.Player2Ships.Add(new Ship(each.Name, each.Size, each.Direction, each.ShipId, each.IsSunken, each.LifeCount));
+
+            }
+
+            var boardState2 = Player2!.PlayerBoardStates.Select(p => p.BoardState).LastOrDefault();
+            var boardState1 = Player1!.PlayerBoardStates.Select(p => p.BoardState).LastOrDefault();
+            BattleShip.SetGameStateFromJsonString(boardState1!, BattleShip.Player1);
+            BattleShip.SetGameStateFromJsonString(boardState2!, BattleShip.Player2);
+            var player = BattleShip.Player1;
+            var playerBoard = BattleShip.Board2;
+
+            if (!BattleShip.NextMoveByX)
+            {
+                player = BattleShip.Player2;
+                playerBoard = BattleShip.Board1;
+            }
+
+
+
+            if (Game.PlayerB.EPlayerType == EPlayerType.Ai && !BattleShip.NextMoveByX)
+            {
+                Random rand = new Random();
+                x = rand.Next(0, BattleShip.Width);
+                y = rand.Next(0, BattleShip.Height);
+                BattleShip.MakeAMove(x.Value, y.Value, playerBoard, BattleShip);
+                SaveGameToDb(player);
+
+                Game.NextMoveByX = BattleShip.NextMoveByX;
                 await _context.SaveChangesAsync();
+                return RedirectToPage("/NextMove/Index", new {id = Game.GameId, message = Message});
+
+
+            }
+
+            if (x != null && y != null)
+            {
+
+                BattleShip.MakeAMove(x.Value, y.Value, playerBoard, BattleShip);
+                SaveGameToDb(player);
+
 
                 if (BattleShip.TextWhenMiss)
                 {
                     Message = "You missed!";
+
+                    Game.NextMoveByX = BattleShip.NextMoveByX;
+                    await _context.SaveChangesAsync();
+
                     return RedirectToPage("/NextMove/Index", new {id = Game.GameId, message = Message});
                 }
-
-                BattleShip.BoardAfterHit(x.Value, y.Value, BattleShip);
                 Message = BattleShip.TextWhenHit ? "Hit!" : "Ship has been destroyed!";
 
-                if(Message.Length > 1 && Game.GameOption.ENextMoveAfterHit == ENextMoveAfterHit.SamePlayer)
-                {
-                    return Page();
-                }
-
             }
+            await _context.SaveChangesAsync();
+            // if(Message.Length > 1 && Game.GameOption.ENextMoveAfterHit == ENextMoveAfterHit.SamePlayer)
+            // {
+            //     return Page();
+            // }
+
             return Page();
         }
 

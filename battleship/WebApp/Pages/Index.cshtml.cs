@@ -30,13 +30,12 @@ namespace WebApp.Pages
                 .Include(g => g.GameOption)
                 .Include(g => g.PlayerA)
                 .Include(g => g.PlayerB)
-                .OrderByDescending(g => g.GameId).ToListAsync();
+                .OrderBy(g => g.Date).ToListAsync();
         }
 
-        public IActionResult OnPostAsync()
+        public IActionResult OnPostAsync(string? ai)
         {
-            return RedirectToPage("./PlayerForm/Index");
-
+            return ai != null ? RedirectToPage("./PlayerForm/Index", new {id = ai}) : RedirectToPage("./PlayerForm/Index");
         }
 
     }

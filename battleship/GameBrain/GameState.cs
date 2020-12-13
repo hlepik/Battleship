@@ -12,11 +12,6 @@ namespace GameBrain
 
         public int Height { get; set; }
 
-        public bool NextMoveByX { get; set; }
-
-
-
-
 
     }
 

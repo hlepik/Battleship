@@ -12,7 +12,6 @@ namespace WebApp.Pages.NextMove
 {
     public class Index : PageModel
     {
-        public BattleShip BattleShip { get; set; } = new BattleShip();
         public Game? Game { get; set; }
         public string Message { get; set; } = "";
 
@@ -28,21 +27,10 @@ namespace WebApp.Pages.NextMove
         public async Task<IActionResult> OnGetAsync(int id, string? submit, string message)
         {
 
-            Game = await _context.Games
-                .Where(x => x.GameId == id)
-                .Include(x => x.PlayerA)
-                .ThenInclude(x =>x.PlayerBoardStates).Take(1)
-                .Include(x => x.PlayerB)
-                .ThenInclude(x =>x.PlayerBoardStates).Take(1)
-                .FirstOrDefaultAsync();
-
-
-            var boardState1 = Game.PlayerA.PlayerBoardStates.Select(x => x.BoardState).Last();
-            var boardState2 = Game.PlayerB.PlayerBoardStates.Select(x => x.BoardState).Last();
-
-            BattleShip.SetGameStateFromJsonString(boardState1, boardState2);
-            BattleShip.Player1 = Game.PlayerA.Name;
-            BattleShip.Player2 = Game.PlayerB.Name;
+            Game = await _context.Games!
+                .Include(p => p.PlayerA)
+                .Include(p => p.PlayerB)
+                .FirstOrDefaultAsync(p => p.GameId == id);
 
             if (submit != null)
             {
@@ -52,5 +40,6 @@ namespace WebApp.Pages.NextMove
             return Page();
 
         }
+
     }
 }

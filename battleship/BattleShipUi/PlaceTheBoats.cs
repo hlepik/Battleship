@@ -35,7 +35,7 @@ namespace BattleShipUi
                 var board = game.GetBoard(playerName);
                 BattleShipConsoleUi.DrawBoard(board);
 
-                if (game.WhoWillPlaceTheShips == "A" || (playerName == "AI"))
+                if (game.WhoWillPlaceTheShips == "A" || playerName == "AI")
                 {
                     do
                     {

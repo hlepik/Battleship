@@ -1,27 +1,32 @@
-﻿@page
+﻿
+@page
+<div class="background">
 @model IndexModel
+
 @{
     ViewData["Title"] = "Home page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Battleship</h1>
+    <h1 class="display-4">BATTLESHIP</h1>
 </div>
 
 @{
     ViewData["Title"] = "Index";
 }
-
 <form method="post">
-    <div class="row">
-        <div class="col">
-            <button type="submit" class="btn btn-primary">New game</button>
-        </div>
+    <div class="buttons" align="center" >
+
+        <button type="submit" class="btn btn-outline-info">New game</button>
+        <button type="submit" class="btn btn-outline-info" asp-route-ai="ai">New game with AI</button>
+
     </div>
 </form>
-<table class="table">
+
+<table class="table table-hover">
     <thead>
-    <tr>
+    <tr class="box-shadow">
+
         <th>
             @Html.DisplayNameFor(model => model.Game![0].Date)
         </th>
@@ -38,8 +43,10 @@
         <th></th>
     </tr>
     </thead>
+
     <tbody>
-    @foreach (var item in Model.Game!) {
+    @foreach (var item in Model.Game!)
+    {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Date)
@@ -54,11 +61,12 @@
             <td>
                 @Html.DisplayFor(modelItem => item.PlayerB.Name)
             </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.GameId">Load</a>
-                <a asp-page="./Games/Delete" asp-route-id="@item.GameId">Delete</a>
+            <td class="align-content-end">
+                <a class="btn btn-outline-info" asp-page="./Edit" asp-route-id="@item.GameId">Load</a>
+                <a class="btn btn-outline-danger" asp-page="/Games/Delete" asp-route-id="@item.GameId">Delete</a>
             </td>
         </tr>
     }
     </tbody>
 </table>
+</div>

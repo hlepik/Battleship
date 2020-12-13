@@ -173,7 +173,7 @@ namespace ConsoleApp
                         (x, y) = MoveCoordinates.GetMoveCoordinates(game);
                     } while (x > game.Width - 1 || y > game.Height - 1);
 
-                    game.MakeAMove(x, y, board);
+                    game.MakeAMove(x, y, board, game);
                     if (!game.TextWhenMiss)
                     {
                         game.BoardAfterHit(x, y, game);
