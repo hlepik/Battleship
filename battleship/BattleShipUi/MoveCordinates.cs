@@ -1,6 +1,5 @@
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using Domain;
 using GameBrain;
@@ -10,7 +9,6 @@ namespace BattleShipUi
 {
     public class MoveCoordinates
     {
-        public static int[] AiLastMove { get; set; } = null!;
 
         public static (int x, int y)  GetMoveCoordinates(BattleShip game)
         {
@@ -24,24 +22,12 @@ namespace BattleShipUi
             if (game.PlayerType2 == EPlayerType.Ai && !game.NextMoveByX)
             {
                 Random random = new Random();
-                // if (BattleShip.AiHit)
-                // {
-                //     while (BattleShip.AiHit)
-                //     {
-                //         x = AiLastMove[0] + 1;
-                //         y = AiLastMove[1];
-                //     }
-                //
-                // }
-                // else
+
                 {
                     x = random.Next(0, game.Width);
                     y = random.Next(0, game.Height);
-                    AiLastMove = new int[] {x, y};
+
                 }
-
-
-
             }
             else
             {
@@ -77,6 +63,17 @@ namespace BattleShipUi
                 Console.ForegroundColor = Color.Blue;
             }
 
+            var board = game.NextMoveByX ? game.Board2 : game.Board1;
+            if (x <= game.Width- 1 &&  y <= game.Height - 1)
+            {
+                if (board[x, y].Miss || board[x, y].Bomb)
+                {
+                    Console.ForegroundColor = Color.Maroon;
+                    System.Console.WriteLine("Already marked!");
+                    Console.ForegroundColor = Color.Blue;
+                }
+
+            }
 
             return (x, y);
         }

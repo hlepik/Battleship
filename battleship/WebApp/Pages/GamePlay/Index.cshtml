@@ -37,7 +37,7 @@ else
             }
             if (cell.Empty)
             {
-                res = "&nbsp;";
+                res = "";
             }
             if (cell.Miss)
             {
@@ -56,13 +56,19 @@ else
     {
         <div class="alert alert-danger" role="alert">@Model.Message</div>
     }
-     <div class="row">
-         <div class="col text-right">
-              <tr>
-           @foreach (var each in @Model.BattleShip.NextMoveByX ? @Model.BattleShip.Player2Ships : Model.BattleShip.Player1Ships)
-           {
+    @if (Model.GameOver.Length > 1)
+    {
+        <div class="alert alert-success" role="alert">@Model.GameOver @player won!</div>
+        <a class="btn btn-outline-info" asp-page="/ViewGame/Index" asp-route-id="@Model.Game?.GameId">View game states</a>
+    }
+<div class="row">
+    <div class="col-@(Model.BattleShip.Width > 14 ? "2,5" : "5") text-right">
+        <div class="text-label" >Game boats</div>
+        <tr>
+                  @foreach (var each in Model.Game!.NextMoveByX ? Model.Game.PlayerB.GameBoats.OrderBy(x => x.Size) : Model.Game.PlayerA.GameBoats.OrderBy(x => x.Size))
+                  {
                var boat = "";
-               for (int i = 0; i < each.Width; i++)
+               for (int i = 0; i < each.Size; i++)
                {
                    if(each.IsSunken)
                    {
@@ -79,7 +85,7 @@ else
            }
      </tr>
     </div>
-         <div class="col" align="left">
+         <div class="col-@(Model.BattleShip.Width > 14 ? "9" : "7") ">
              <table class="no-boarder">
                  @{ Hidden = true; }
 
@@ -96,7 +102,7 @@ else
                  }
 
 
-                 @for (int y = 0; y < Model.BattleShip.Width; y++)
+                 @for (int y = 0; y < Model.BattleShip.Height; y++)
                  {
 
                      char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
@@ -106,13 +112,22 @@ else
                              @Html.Raw(alpha[y])
                          </td>
 
-                         @for (int x = 0; x < Model.BattleShip.Height; x++)
+                         @for (int x = 0; x < Model.BattleShip.Width; x++)
                          {
+                             var square = (GetCellContent(Model.BattleShip.GetCell(x, y, Model.BattleShip.NextMoveByX ? Model.BattleShip.Board2 : Model.BattleShip.Board1)));
+                             if (square == "")
+                             {
                              <td class="table table-bordered border-size text-center"
 
                                  onclick="window.location.href = '?x=@x&y=@y&id=@Model.Game?.GameId'" style="cursor: pointer">
-                                 @Html.Raw(GetCellContent(Model.BattleShip.GetCell(x, y, Model.BattleShip.NextMoveByX ? Model.BattleShip.Board2: Model.BattleShip.Board1)))
-                             </td>
+                                 </td>
+                             }
+                             else
+                             {
+                                 <td class="table table-bordered border-size text-center" >@square</td>
+                             }
+
+
                          }
                      </tr>
                  }
@@ -133,7 +148,7 @@ else
             }
 
 
-            @for (int y = 0; y < Model.BattleShip.Width; y++)
+            @for (int y = 0; y < Model.BattleShip.Height; y++)
             {
 
                 char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
@@ -143,7 +158,7 @@ else
                         @Html.Raw(alpha[y])
                     </td>
 
-                    @for (int x = 0; x < Model.BattleShip.Height; x++)
+                    @for (int x = 0; x < Model.BattleShip.Width; x++)
                     {
                         <td class="table table-bordered border-size text-center">
                             @Html.Raw(GetCellContent(Model.BattleShip.GetCell(x, y, Model.BattleShip.NextMoveByX ? Model.BattleShip.Board1: Model.BattleShip.Board2)))

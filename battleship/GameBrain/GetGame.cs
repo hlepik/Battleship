@@ -1,79 +1,76 @@
-using System;
-using System.Data.Entity;
+
 using System.Linq;
 using DAL;
-using Domain;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Win32.SafeHandles;
+
 
 namespace GameBrain
 {
     public class GetGame
     {
-        public static BattleShip GetGameFromDb(int gameOptionId)
+        public static BattleShip GetGameFromDb(int gameId)
         {
             using var db = new AppDbContext();
-            var ship = new Ship();
             var game = new BattleShip();
-            var player1Id = 0;
-            var player2Id = 0;
+            game.GameId = gameId;
+            var gameOptionId = 0;
 
+            foreach (var games in db.Games!.Where(x => x.GameId == gameId))
+            {
+
+                game.PlayerAId = games.PlayerAId;
+                game.PlayerBId = games.PlayerBId;
+                game.NextMoveByX = games.NextMoveByX;
+                gameOptionId = games.GameOptionId;
+
+            }
             foreach (var gameOption in db.GameOptions.Where(x => x.GameOptionId == gameOptionId))
             {
                 game.Width = gameOption.BoardWidth;
                 game.Height = gameOption.BoardHeight;
                 game.GameRule = gameOption.EBoatsCanTouch;
                 game.NextMove = gameOption.ENextMoveAfterHit;
+
             }
 
-            foreach (var games in db.Games.Where(x => x.GameOptionId == gameOptionId))
-            {
-
-                player1Id = games.PlayerAId;
-                player2Id = games.PlayerBId;
-                game.NextMoveByX = games.NextMoveByX;
-            }
-            foreach (var players in db.Players.Where(x => x.PlayerId == player1Id))
+            foreach (var players in db.Players.Where(x => x.PlayerId == game.PlayerAId))
             {
 
                 game.Player1 = players.Name;
                 game.PlayerType1 = players.EPlayerType;
             }
-            foreach (var players in db.Players.Where(x => x.PlayerId == player2Id))
+            foreach (var players in db.Players.Where(x => x.PlayerId == game.PlayerBId))
             {
 
                 game.Player2 = players.Name;
                 game.PlayerType2 = players.EPlayerType;
             }
 
-            string boardState1 = "";
-            string boardState2 = "";
-            foreach (var board in db.PlayerBoardStates.Where(x => x.PlayerId == player1Id))
+
+            var boardState1 = db.PlayerBoardStates
+                .OrderByDescending(p => p.CreatedAt)
+                .Where(p => p.PlayerId == game.PlayerAId)
+                .Select(p =>p.BoardState)
+                .FirstOrDefault();
+
+            var boardState2 = db.PlayerBoardStates
+                .OrderByDescending(p => p.CreatedAt)
+                .Where(p => p.PlayerId == game.PlayerBId)
+                .Select(p =>p.BoardState)
+                .FirstOrDefault();
+
+
+            foreach (var boat in db.GameBoats!.Where(x => x.PlayerId == game.PlayerAId))
             {
 
-                boardState1 = board.BoardState;
+                game.Player1Ships.Add(new Ship(boat.Name,boat.Size,boat.Direction,boat.GameBoatId, boat.IsSunken, boat.LifeCount));
             }
-
-            foreach (var board in db.PlayerBoardStates.Where(x => x.PlayerId == player2Id))
+            foreach (var boat in db.GameBoats!.Where(x => x.PlayerId == game.PlayerBId))
             {
 
-                boardState2 = board.BoardState;
+                game.Player2Ships.Add(new Ship(boat.Name,boat.Size,boat.Direction,boat.GameBoatId, boat.IsSunken, boat.LifeCount));
             }
-
-
-            foreach (var boat in db.GameBoats.Where(x => x.PlayerId == player1Id))
-            {
-
-                game.Player1Ships.Add(new Ship(boat.Name,boat.Size,boat.Direction,boat.ShipId, boat.IsSunken, boat.LifeCount));
-            }
-            foreach (var boat in db.GameBoats.Where(x => x.PlayerId == player2Id))
-            {
-
-                game.Player2Ships.Add(new Ship(boat.Name,boat.Size,boat.Direction,boat.ShipId, boat.IsSunken, boat.LifeCount));
-                ship.LifeCount = boat.LifeCount;
-            }
-            game.SetGameStateFromJsonString(boardState1, game.Player1);
-            game.SetGameStateFromJsonString(boardState2, game.Player2);
+            game.SetGameStateFromJsonString(boardState1!, game.Player1);
+            game.SetGameStateFromJsonString(boardState2!, game.Player2);
 
             return game;
         }

@@ -1,11 +1,8 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Domain;
-using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace WebApp.Pages.NextMove
@@ -13,7 +10,7 @@ namespace WebApp.Pages.NextMove
     public class Index : PageModel
     {
         public Game? Game { get; set; }
-        public string Message { get; set; } = "";
+        [BindProperty(SupportsGet = true)]public string Message { get; set; } = "";
 
         private readonly DAL.AppDbContext _context;
         private readonly ILogger<Index> _logger;
@@ -24,7 +21,7 @@ namespace WebApp.Pages.NextMove
             _logger = logger;
 
         }
-        public async Task<IActionResult> OnGetAsync(int id, string? submit, string message)
+        public async Task<IActionResult> OnGetAsync(int id, string? submit)
         {
 
             Game = await _context.Games!

@@ -13,70 +13,72 @@ else
 }
 
 <div class="container">
-    <h2>@player choose your boat locations</h2>
-    @functions
+<h2>@player choose your boat locations</h2>
+@functions
+{
+
+    string GetCellContent(CellState cell)
     {
+        var res = "";
 
-        string GetCellContent(CellState cell)
+        if (cell != null)
         {
-            var res = "";
-
-            if (cell != null)
+            if (cell.Ship)
             {
-                if (cell.Ship)
-                {
-                    res = "🟦";
-                }
-
-                if (cell.Empty)
-                {
-                    res = "&nbsp;";
-                }
+                res = "🟦";
             }
 
-            return res;
-        }
-
-
-    }
-    <div class="container">
-        @if (Model.Message.Length > 1)
-        {
-            <div class="alert alert-danger" role="alert">@Model.Message</div>
-        }
-
-            <div class="row">
-            <div class="col text-right">
-             <div class="text-label">Choose your boat</div>
-            <tr>
-            @foreach (var each in Model.GameShips)
+            if (cell.Empty)
             {
-                var boat = "";
-                for (int i = 0; i < each.Width; i++)
-                {
-                    if (each.Inserted || Model.Random != null)
-                    {
-                        boat += "🟥";
-                    }
-                    else
-                    {
-                        boat += "🟦";
-                    }
-                }
-                if (each.Inserted || Model.Random != null)
-                {
-                    <td><a>@each.Name @boat </a></td>
+                res = "&nbsp;";
+            }
+        }
 
+        return res;
+    }
+
+
+}
+<div class="container">
+@if (Model.Message.Length > 1)
+{
+    <div class="alert alert-danger" role="alert">@Model.Message</div>
+}
+
+<div class="row">
+    <div class="col-@(Model.BattleShip.Width > 14 ? "2,5" : "5") text-right">
+        <div class="text-label">Choose your boat</div>
+        <tr>
+
+        @foreach (var each in Model.Game!.NextMoveByX ? Model.Game.PlayerA.GameBoats.OrderBy(x => x.Size) : Model.Game.PlayerB.GameBoats.OrderBy(x => x.Size))
+        {
+
+            var boat = "";
+            for (int i = 0; i < each.Size; i++)
+            {
+                if (each.IsInserted || Model.Random != null)
+                {
+                    boat += "🟥";
                 }
                 else
                 {
-                    <td><a class="list-group list-group-flush" asp-route-id="@Model.Game?.GameId"  asp-route-dir="@Model.Direction" asp-route-ship="@each.ShipId" >@each.Name @boat </a></td>
-
+                    boat += "🟦";
                 }
+            }
+            if (each.IsInserted || Model.Random != null)
+            {
+
+                <tr><a class="p-1">@boat </a></tr>
 
             }
+            else
+            {
 
-        </tr>
+                <tr><a class="list-group list-group-flush" asp-route-id="@Model.Game?.GameId" asp-route-dir="@Model.Direction" asp-route-ship="@each.GameBoatId">@boat </a></tr>
+            }
+        }
+
+    </tr>
 
         <tr>
             <div class="text-label" >Choose boat direction</div>
@@ -93,7 +95,7 @@ else
 
 
     </div>
-    <div class="col text-center">
+    <div class="col-@(Model.BattleShip.Width > 14 ? "9" : "7") ">
         <table class="no-boarder">
 
             @for (int x = 0; x < Model.BattleShip.Width + 1; x++)
@@ -109,7 +111,7 @@ else
             }
 
 
-            @for (int y = 0; y < Model.BattleShip.Width; y++)
+            @for (int y = 0; y < Model.BattleShip.Height; y++)
             {
 
                 char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
@@ -119,7 +121,7 @@ else
                         @Html.Raw(alpha[y])
                     </td>
 
-                    @for (int x = 0; x < Model.BattleShip.Height; x++)
+                    @for (int x = 0; x < Model.BattleShip.Width; x++)
                     {
 
                         <td class="table table-bordered border-size text-center"

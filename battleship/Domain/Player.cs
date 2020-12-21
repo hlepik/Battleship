@@ -16,8 +16,6 @@ namespace Domain
         public Game Game { get; set; } = null!;
         public int? GameId { get; set; }
 
-        public ICollection<Boat> Boats { get; set; } = null!;
-
         public ICollection<PlayerBoardState> PlayerBoardStates { get; set; } = null!;
         public ICollection<GameBoat> GameBoats { get; set; } = null!;
 

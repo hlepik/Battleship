@@ -1,7 +1,4 @@
-using System;
-using System.Data;
-using Domain;
-using Domain.Enums;
+
 using static Domain.Enums.EBoatsCanTouch;
 
 namespace GameBrain
@@ -112,9 +109,9 @@ namespace GameBrain
             }
             case "D" when y + size -1 < game.Height:
             {
-                for (int i = x - 1; i < x + 2; i++)
+                for (int j = y - 1; j < y + size + 1; j++)
                 {
-                    for (int j = y - 1; j < y + size + 1; j++)
+                    for (int i = x - 1; i < x + 2; i++)
                     {
                         if (i < 0 || i >= game.Width || j < 0 || j >= game.Height) continue;
                         if (No == game.GameRule && !board[i, j].Empty && !_aroundShip)
@@ -203,9 +200,8 @@ namespace GameBrain
                 if (i == x - 1 && j == y - 1)
                 {
                     corner = true;
-
                 }
-                else if (i == x - 1 && j == y + 1)
+                else if (i == x + 1 && j == y - 1)
                 {
                     corner = true;
                 }

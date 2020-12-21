@@ -14,7 +14,6 @@ namespace WebApp.Pages.PlayerForm
 {
     public class Index : PageModel
     {
-        public IList<Game>? Game { get; set; }
         public BattleShip Battleship { get; set; } = new BattleShip();
         [BindProperty,MinLength(2),MaxLength(128)] public string PlayerA { get; set; } = null!;
         [BindProperty,MinLength(2),MaxLength(128)] public string PlayerB { get; set; } = null!;
@@ -23,7 +22,7 @@ namespace WebApp.Pages.PlayerForm
         public string Message { get; set; } = "";
         [BindProperty]public EBoatsCanTouch GameRule { get; set; }
         [BindProperty]public ENextMoveAfterHit NextMove { get; set; }
-        public string Ai { get; set; } = "";
+        [BindProperty(SupportsGet = true)]public string Ai { get; set; } = "";
         public CellState[,] Board1 { get; set; } = null!;
         public CellState[,] Board2 { get; set; } = null!;
         public List<Ship> Boats { get; set; } = null!;
@@ -111,25 +110,33 @@ namespace WebApp.Pages.PlayerForm
             Boats = boats.BoatsCount(Battleship.Width, Battleship.Height);
             foreach (var each in Boats)
             {
-                var gameBoat = new Boat()
+                var gameBoat = new GameBoat()
                 {
                     Name = each.Name,
                     Size = each.Width,
+                    LifeCount = each.Width,
+                    IsSunken = false,
+                    Direction = "",
+                    ShipId = 0
 
                 };
                 gameBoat.PlayerId = playerA.PlayerId;
-                _context.Boats!.Add(gameBoat);
+                _context.GameBoats!.Add(gameBoat);
             }
             foreach (var each in Boats)
             {
-                var gameBoat = new Boat()
+                var gameBoat = new GameBoat()
                 {
                     Name = each.Name,
                     Size = each.Width,
+                    LifeCount = each.Width,
+                    IsSunken = false,
+                    Direction = "",
+                    ShipId = 0
 
                 };
                 gameBoat.PlayerId = playerB.PlayerId;
-                _context.Boats!.Add(gameBoat);
+                _context.GameBoats!.Add(gameBoat);
             }
             var game = new Game()
             {

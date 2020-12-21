@@ -1,7 +1,5 @@
-using System;
 using System.Drawing;
 using System.Linq;
-using Domain;
 using GameBrain;
 using Console = Colorful.Console;
 
@@ -13,11 +11,11 @@ namespace BattleShipUi
         {
             var place = new CanInsertBoat();
             var boat = new BoatCount();
-
-            // var boats = new BoatCount();
+            var insert = new InsertingBoats();
             game.CanInsert = true;
 
             Console.Clear();
+            game.WhoWillPlaceTheShips = insert.InsertingBoat(playerName);
             if (game.WhoWillPlaceTheShips == "M")
             {
                 System.Console.WriteLine($"{playerName} please insert your ships!");
@@ -29,7 +27,7 @@ namespace BattleShipUi
             {
                 var x = 0;
                 var y = 0;
-                var direction = "";
+                var direction = "R";
 
 
                 var board = game.GetBoard(playerName);
@@ -37,24 +35,9 @@ namespace BattleShipUi
 
                 if (game.WhoWillPlaceTheShips == "A" || playerName == "AI")
                 {
-                    do
-                    {
-                        Random random = new Random();
-                        x = random.Next(0, game.Width);
-                        y = random.Next(0, game.Height);
-                        var num = random.Next(1, 3);
-                        if (num == 1 )
-                        {
-                            direction = "R";
-                        }
-                        else
-                        {
-                            direction = "D";
-                        }
 
-                        place.BoatLocationCheck(game, x, y, each.Width, direction, playerName);
-
-                    }while (x > game.Width - 1 || y > game.Height - 1 || !game.CanInsert);
+                    var random = new RandomBoats();
+                    (x, y, direction) = random.RandomBoat(game, playerName, each.Width);
 
                 }
 
@@ -63,7 +46,6 @@ namespace BattleShipUi
 
                     do
                     {
-                        game.CanInsert = true;
                         Console.ForegroundColor = Color.Aqua;
                         System.Console.Write($"Enter {each.Name} size={each.Width} location: ");
                         (x, y) = MoveCoordinates.GetMoveCoordinates(game);
@@ -98,7 +80,7 @@ namespace BattleShipUi
                         System.Console.WriteLine("You can't place your ship here!");
                         Console.ForegroundColor = Color.Blue;
 
-                    } while (x > game.Width- 1 || y > game.Height - 1 || !game.CanInsert);
+                    } while (!game.CanInsert);
                 }
 
                 game.InsertBoat(x, y, playerName, each.Width, direction, each.Name);

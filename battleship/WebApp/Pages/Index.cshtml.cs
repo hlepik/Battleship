@@ -22,23 +22,43 @@ namespace WebApp.Pages
         }
 
         public IList<Game>? Game { get;set; }
+        [BindProperty(SupportsGet = true)]
+        public string? FileName { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string? Btn { get; set; }
 
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
             Game = await _context.Games!
                 .Include(g => g.GameOption)
                 .Include(g => g.PlayerA)
                 .Include(g => g.PlayerB)
-                .OrderBy(g => g.Date).ToListAsync();
+                .OrderByDescending(g => g.Date).ToListAsync();
+
+            var query = _context.Games!
+                .Include(r => r.GameOption).AsQueryable();
+
+            if (Btn == "Reset")
+            {
+                FileName = "";
+                Btn = "";
+                return RedirectToPage("/Index");
+            }
+
+            FileName = FileName?.Trim();
+            if (!string.IsNullOrWhiteSpace(FileName))
+            {
+                query = query.Where(m => m.GameOption.Name.Contains(FileName));
+            }
+            Game = await query.OrderByDescending(x =>x.Date).ToListAsync();
+            return Page();
         }
+
 
         public IActionResult OnPostAsync(string? ai)
         {
             return ai != null ? RedirectToPage("./PlayerForm/Index", new {id = ai}) : RedirectToPage("./PlayerForm/Index");
         }
-
     }
-
-
 }

@@ -27,6 +27,16 @@
       <_ContentIncludedByDefault Remove="Pages\GameOptions\Edit.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\GameOptions\Index.cshtml" />
       <_ContentIncludedByDefault Remove="PlaceTheShips\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="wwwroot\uploads\IMGP3108.JPG" />
+      <_ContentIncludedByDefault Remove="Pages\Boats\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Boats\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Boats\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Boats\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Boats\Index.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Pages\StartGame\Index.cshtml" />
     </ItemGroup>
 
 </Project>

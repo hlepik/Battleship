@@ -25,14 +25,28 @@ h2{
 }
 .text-label{
   color: #117a8b!important;
-
   text-align: right;
   padding-bottom: 1rem;
   padding-top: 1rem;
 
 }
-.start-button{
-  padding-left: 15rem;
+.col-md-4{
+  text-align: right;
+  flex: auto;
+}
+.layout-1{
+  width: 70%;
+}
+.page-layout {
+  table-layout: fixed;
+  width: 30%;
+  margin-top:20px;
+  border-collapse: collapse;
+}
+
+.container {
+  display: table;
+  width: 100%;
 }
 .button-padding{
   padding-left: 5rem;
@@ -51,6 +65,10 @@ h2{
 .form-group{
   color: #0f6674;
   align-items: center;
+}
+.text-ok{
+  color: cadetblue!important;
+  padding-bottom: 1rem;
 }
 
 .no-boarder{

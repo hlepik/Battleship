@@ -1,0 +1,132 @@
+@page
+@using GameBrain
+@model WebApp.Pages.ViewGame.Index
+
+
+
+
+@if (Model.Count > 1)
+{
+    <a class="btn btn-outline-info" asp-route-id="@Model.Game?.GameId" asp-route-index="@Model.Count">Back</a>
+
+}
+@if (Model.Count < Model.AllCount)
+{
+    <a class="btn btn-outline-info" asp-route-id="@Model.Game?.GameId" asp-route-forward="@Model.Count">Forward</a>
+
+}
+
+
+
+@functions
+    {
+
+    string GetCellContent(CellState cell)
+    {
+        var res = "";
+
+        if (cell != null)
+        {
+            if (cell.Ship)
+            {
+                res = "🟦";
+            }
+            if (cell.Bomb)
+            {
+                res =  "🟥";
+            }
+            if (cell.Empty)
+            {
+                res = "";
+            }
+            if (cell.Miss)
+            {
+                res = "•";
+            }
+        }
+
+        return res;
+    }
+}
+<div class="container">
+<div class="row">
+    <div class="col-10 text-center">
+    <div class="text-left p-1">@Model.BattleShip.Player1 board</div>
+    <table class="no-boarder">
+
+        @for (int x = 0; x < Model.BattleShip.Width + 1; x++)
+        {
+            if (x == 0)
+            {
+                <td> @Html.Raw("&nbsp;")</td>
+            }
+            else
+            {
+                <td class="no-boarder"> @Html.Raw(x)</td>
+            }
+        }
+
+
+        @for (int y = 0; y < Model.BattleShip.Height; y++)
+        {
+
+            char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+            <tr>
+
+                <td class="no-boarder">
+                    @Html.Raw(alpha[y])
+                </td>
+
+                @for (int x = 0; x < Model.BattleShip.Width; x++)
+                {
+
+                    <td class="table table-bordered border-size text-center">
+
+                        @Html.Raw(GetCellContent(Model.BattleShip.GetCell(x, y, Model.BattleShip.Board1)))
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+</div>
+    <div class="col-10 text-center">
+        <div class="text-left p-1">@Model.BattleShip.Player2 board</div>
+        <table class="no-boarder">
+
+            @for (int x = 0; x < Model.BattleShip.Width + 1; x++)
+            {
+                if (x == 0)
+                {
+                    <td> @Html.Raw("&nbsp;")</td>
+                }
+                else
+                {
+                    <td class="no-boarder"> @Html.Raw(x)</td>
+                }
+            }
+
+
+            @for (int y = 0; y < Model.BattleShip.Height; y++)
+            {
+
+                char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+                <tr>
+
+                    <td class="no-boarder">
+                        @Html.Raw(alpha[y])
+                    </td>
+
+                    @for (int x = 0; x < Model.BattleShip.Width; x++)
+                    {
+
+                        <td class="table table-bordered border-size text-center">
+
+                            @Html.Raw(GetCellContent(Model.BattleShip.GetCell(x, y, Model.BattleShip.Board2)))
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+    </div>

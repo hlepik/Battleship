@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.Json;
 using DAL;
 using Domain;
 using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
-using Console = Colorful.Console;
 
 namespace GameBrain
 {
@@ -28,7 +26,6 @@ namespace GameBrain
         public bool TextWhenHit { get; set; }
 
         public static bool Ai { get; set; }
-        public bool AiHit { get; set; }
 
         public List<Ship> Player1Ships { get; set; } = new List<Ship>();
         public List<Ship> Player2Ships { get; set; } = new List<Ship>();
@@ -37,10 +34,10 @@ namespace GameBrain
         public int Height;
 
         public string Player1 = null!;
-        public int Player1Id { get; set; }
-        public int Player2Id { get; set; }
         public string Player2 = null!;
         public string FileName = null!;
+        public int PlayerAId { get; set; }
+        public int PlayerBId { get; set; }
 
 
         public string WhoWillPlaceTheShips { get; set; } = null!;
@@ -56,11 +53,6 @@ namespace GameBrain
         {
             get => _canInsert;
             set => _canInsert = value;
-        }
-
-        public CellState[,] GetBoard1()
-        {
-            return Board1;
         }
 
         public BattleShip(int width, int height, string player1, string player2, EBoatsCanTouch gameRule)
@@ -210,10 +202,6 @@ namespace GameBrain
                         TextWhenHit = true;
                         each.LifeCount -= 1;
 
-                        if (Ai && !NextMoveByX)
-                        {
-                            AiHit = true;
-                        }
                     }
                     else
                     {
@@ -221,10 +209,6 @@ namespace GameBrain
                         each.IsSunken = true;
                         insert.AroundShip = true;
 
-                        if (Ai && !NextMoveByX)
-                        {
-                            AiHit = false;
-                        }
                         var xy = board[x, y].FirstLocation;
                         x = xy[0];
                         y = xy[1];
@@ -234,15 +218,13 @@ namespace GameBrain
                         insert.BoatLocationCheck(game, x, y, each.Width, each.Direction, playerName);
                         GameOver();
                     }
-
-                }
-
-                if (ENextMoveAfterHit.OtherPlayer == NextMove)
-                {
-                    NextMoveByX = !NextMoveByX;
                 }
             }
 
+            if (ENextMoveAfterHit.OtherPlayer == NextMove)
+            {
+                NextMoveByX = !NextMoveByX;
+            }
             return "";
         }
 
@@ -316,7 +298,7 @@ namespace GameBrain
 
             if (GameId != 0)
             {
-                Game = db.Games.Where(x => x.GameId == GameId)
+                Game = db.Games!.Where(x => x.GameId == GameId)
                     .Include(x => x.PlayerAId)
                     .Include(x => x.PlayerBId).FirstOrDefault();
 
@@ -325,7 +307,7 @@ namespace GameBrain
                     var player2BoardState = new PlayerBoardState()
                     {
                         BoardState =  GetSerializedGameState(Board2),
-                        Player = Game.PlayerB
+                        Player = Game!.PlayerB
                     };
                     db.PlayerBoardStates.Add(player2BoardState);
 
@@ -350,7 +332,7 @@ namespace GameBrain
                     var player1BoardState = new PlayerBoardState()
                     {
                         BoardState = GetSerializedGameState(Board1),
-                        Player = Game.PlayerA
+                        Player = Game!.PlayerA
                     };
 
                     db.PlayerBoardStates.Add(player1BoardState);
@@ -414,17 +396,6 @@ namespace GameBrain
 
             GameId = game.GameId;
 
-            foreach (var each in Player1Ships)
-            {
-                var boat = new Boat()
-                {
-                    Name = each.Name,
-                    Size = each.Width
-                };
-                boat.PlayerId = playerA.PlayerId;
-                db.Boats.Add(boat);
-            }
-
             foreach (var each in Player2Ships)
             {
                 var gameBoat = new GameBoat()
@@ -434,7 +405,9 @@ namespace GameBrain
                     IsSunken = each.IsSunken,
                     Direction = each.Direction,
                     LifeCount = each.LifeCount,
-                    ShipId = each.ShipId
+                    ShipId = each.ShipId,
+                    IsInserted = true
+
                 };
                 gameBoat.Player = playerB;
                 db.GameBoats!.Add(gameBoat);
@@ -450,7 +423,8 @@ namespace GameBrain
                     IsSunken = each.IsSunken,
                     Direction = each.Direction,
                     LifeCount = each.LifeCount,
-                    ShipId = each.ShipId
+                    ShipId = each.ShipId,
+                    IsInserted = true
                 };
                 gameBoat.Player = playerA;
                 db.GameBoats!.Add(gameBoat);
@@ -472,8 +446,6 @@ namespace GameBrain
             // // this will actually save data to db
 
             db.SaveChanges();
-            Player1Id = playerA.PlayerId;
-            Player2Id = playerB.PlayerId;
             return "";
         }
 

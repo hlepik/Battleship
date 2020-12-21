@@ -22,6 +22,21 @@
 
     </div>
 </form>
+<form class="form-inline" method="get">
+    <table class="table table-borderless">
+        <td>
+        <input asp-for="FileName" class="form-control mb-0.9 mr-sm-1" placeholder="Find game"/>
+
+            <a><input asp-for="Btn" type="submit" value="Search" class="btn btn-outline-primary"/></a>
+            @if (!string.IsNullOrWhiteSpace(Model.FileName))
+            {
+                <a><input asp-for="Btn" type="submit" value="Reset" class="btn btn-outline-secondary"/></a>
+            }
+
+        </td>
+    </table>
+</form>
+
 
 <table class="table table-hover">
     <thead>
@@ -62,7 +77,7 @@
                 @Html.DisplayFor(modelItem => item.PlayerB.Name)
             </td>
             <td class="align-content-end">
-                <a class="btn btn-outline-info" asp-page="./Edit" asp-route-id="@item.GameId">Load</a>
+                <a class="btn btn-outline-info" asp-page="./Games/Edit" asp-route-id="@item.GameId">Load</a>
                 <a class="btn btn-outline-danger" asp-page="/Games/Delete" asp-route-id="@item.GameId">Delete</a>
             </td>
         </tr>

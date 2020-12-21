@@ -1,6 +1,5 @@
 using System;
 using System.Drawing;
-using System.Globalization;
 using Domain.Enums;
 using Console = Colorful.Console;
 
@@ -37,6 +36,5 @@ namespace BattleShipUi
 
             return nextMove;
         }
-
     }
 }

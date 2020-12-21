@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
 using BattleShipUi;
 using DAL;
 using Domain;
@@ -83,7 +82,6 @@ namespace ConsoleApp
             var boats = new PlaceTheBoats();
             var input = new UserInput();
             var rules = new Rules();
-            var insert = new InsertingBoats();
             var nextMove = new NextMoveAfterHit();
 
             var (player1, player2) = input.AskName();
@@ -92,7 +90,6 @@ namespace ConsoleApp
             var gameRules = rules.GameRules();
             var game = new BattleShip(width, height, player1, player2, gameRules);
             game.NextMove = nextMove.NextMoveAfterHitRule();
-            game.WhoWillPlaceTheShips = insert.InsertingBoat();
             Console.Clear();
             boats.BoatsLocation(game, player1);
             boats.BoatsLocation(game, player2);
@@ -111,7 +108,7 @@ namespace ConsoleApp
             return "";
         }
 
-        static string PlayGame(BattleShip game)
+        private static string PlayGame(BattleShip game)
 
         {
             Console.Clear();
@@ -162,34 +159,29 @@ namespace ConsoleApp
                 {
                     var y = 0;
                     var x = 0;
+                    var boardCell = game.NextMoveByX ? game.Board2 : game.Board1;
                     do
                     {
                         if (game.PlayerType2 != EPlayerType.Ai || game.NextMoveByX)
                         {
                             Console.Write(
-                                $"Give Y (A-{Convert.ToChar(game.Width + 64)}) X (1-{game.Height}): ");
+                                $"Give Y (A-{Convert.ToChar(game.Height + 64)}) X (1-{game.Width}): ");
                         }
 
                         (x, y) = MoveCoordinates.GetMoveCoordinates(game);
-                    } while (x > game.Width - 1 || y > game.Height - 1);
+
+                    } while (x > game.Width - 1 || y > game.Height - 1 || boardCell[x, y].Miss || boardCell[x, y].Bomb);
 
                     game.MakeAMove(x, y, board, game);
-                    if (!game.TextWhenMiss)
-                    {
-                        game.BoardAfterHit(x, y, game);
-                    }
+
                     if (game.TextWhenMiss)
                     {
                         bombText = "You missed!";
-                    }else if(game.TextWhenHit)
+                    }else
+                    {
+                        bombText = game.TextWhenHit ? "Hit" : "Ship has been destroyed!";
+                    }
 
-                    {
-                        bombText = "Hit!";
-                    }
-                    else
-                    {
-                        bombText = "Ship has been destroyed!";
-                    }
 
                 }
                 Console.Clear();
@@ -199,12 +191,15 @@ namespace ConsoleApp
 
                 if (BattleShip.GameIsOver)
                 {
+
                     int red = 200;
                     int green = 100;
                     int blue = 255;
 
                     Console.WriteAscii($"{(game.NextMoveByX ? game.Player1 : game.Player2)} WON!",
                         Color.FromArgb(red, green, blue));
+
+
                 }
 
                 return "";
@@ -224,37 +219,42 @@ namespace ConsoleApp
 
         static string LoadGameAction()
         {
-            var game = new BattleShip();
 
             using var db = new AppDbContext();
             int count = 1;
 
 
-            foreach (var games in db.GameOptions)
+            foreach (var mm in db.Games!.Include(p =>p.GameOption))
             {
-                Console.ForegroundColor = Color.Blue;
-                Console.WriteLine($"{count } - {games.Name}");
+                Console.WriteLine($"{count } - {mm.GameOption.Name} {mm.Date} ");
+
                 count++;
             }
+
             var fileNumber = Console.ReadLine();
             count = 1;
-            var gameOptionId = 0;
-            foreach (var games in db.GameOptions){
+            var gameId = 0;
+            foreach (var games in db.Games!){
 
                 if (count == int.Parse(fileNumber))
                 {
-                    gameOptionId = games.GameOptionId;
+                    gameId = games.GameId;
                 }
 
                 count++;
             }
-            game = GetGame.GetGameFromDb(gameOptionId);
-            PlayGame(game);
+            PlayGame(GetGame.GetGameFromDb(gameId));
             return "";
         }
 
         static string SaveGameAction(BattleShip game)
         {
+            if (game.GameId != 0)
+            {
+                var update = new GameUpdate();
+                update.Update(game);
+                return "";
+            }
             var defaultName = "save_" + DateTime.Now.ToString("yyyy-MM-dd") + ".json";
             Console.Write($"File name ({defaultName}):");
             game.FileName = Console.ReadLine();
@@ -270,9 +270,5 @@ namespace ConsoleApp
 
             return "";
         }
-
-
     }
-
-
 }

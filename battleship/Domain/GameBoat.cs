@@ -16,8 +16,9 @@ namespace Domain
         public int LifeCount { get; set; }
 
         public string Direction { get; set; } = null!;
-        public int ShipId { get; set; }
+        public bool IsInserted { get; set; }
 
+        public int ShipId { get; set; }
         public bool IsSunken { get; set; }
 
         public int PlayerId { get; set; }

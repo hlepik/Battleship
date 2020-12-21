@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain;
+using Domain.Enums;
 using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -25,18 +26,28 @@ namespace WebApp.Pages.GamePlay
         public BattleShip BattleShip { get; set; } = new BattleShip();
 
         public string Message { get; set; } = "";
+        public string GameOver { get; set; } = "";
 
         public void SaveGameToDb(string player)
         {
+
+
+            var boardState = new PlayerBoardState()
+            {
+                PlayerId = Game!.PlayerBId,
+                BoardState = BattleShip.GetSerializedGameState(BattleShip.Board2)
+            };
+            _context.PlayerBoardStates.Add(boardState);
+
+            var boardState2 = new PlayerBoardState()
+            {
+                PlayerId = Game.PlayerAId,
+                BoardState = BattleShip.GetSerializedGameState(BattleShip.Board1)
+            };
+            _context.PlayerBoardStates.Add(boardState2);
+
             if (player == Game!.PlayerA.Name)
             {
-                var boardState = new PlayerBoardState()
-                {
-                    PlayerId = Game!.PlayerBId,
-                    BoardState = BattleShip.GetSerializedGameState(BattleShip.Board2)
-                };
-                _context.PlayerBoardStates.Add(boardState);
-
                 if (!BattleShip.TextWhenMiss)
                 {
                     foreach (var each in Game.PlayerB.GameBoats.Where(x => x.ShipId == BattleShip.ShipId))
@@ -50,12 +61,7 @@ namespace WebApp.Pages.GamePlay
             }
             else
             {
-                var boardState = new PlayerBoardState()
-                {
-                    PlayerId = Game.PlayerAId,
-                    BoardState = BattleShip.GetSerializedGameState(BattleShip.Board1)
-                };
-                _context.PlayerBoardStates.Add(boardState);
+
                 if (!BattleShip.TextWhenMiss)
                 {
                     foreach (var each in Game.PlayerA.GameBoats.Where(x => x.ShipId == BattleShip.ShipId))
@@ -77,14 +83,13 @@ namespace WebApp.Pages.GamePlay
             Game = await _context.Games!
                 .Include(p => p.GameOption)
                 .Include(p => p.PlayerA)
-                .ThenInclude(p=>p.PlayerBoardStates)
                 .Include(p => p.PlayerA)
                 .ThenInclude(p =>p.GameBoats)
                 .Include(p => p.PlayerB)
-                .ThenInclude(p=>p.PlayerBoardStates)
                 .Include(p => p.PlayerB)
                 .ThenInclude(p =>p.GameBoats)
                 .FirstOrDefaultAsync(p => p.GameId == id);
+
 
 
             BattleShip.Width = Game.GameOption.BoardWidth;
@@ -94,6 +99,7 @@ namespace WebApp.Pages.GamePlay
             BattleShip.GameRule = Game.GameOption.EBoatsCanTouch;
             BattleShip.NextMoveByX = Game.NextMoveByX;
             BattleShip.PlayerType2 = Game.PlayerB.EPlayerType;
+            BattleShip.NextMove = Game.GameOption.ENextMoveAfterHit;
 
             foreach (var each in Game.PlayerA.GameBoats)
             {
@@ -106,10 +112,16 @@ namespace WebApp.Pages.GamePlay
 
             }
 
-            var boardState2 = Game.PlayerB.PlayerBoardStates.Select(p => p.BoardState).LastOrDefault();
-            var boardState1 =Game.PlayerA.PlayerBoardStates.Select(p => p.BoardState).LastOrDefault();
-            BattleShip.SetGameStateFromJsonString(boardState1!, BattleShip.Player1);
-            BattleShip.SetGameStateFromJsonString(boardState2!, BattleShip.Player2);
+            var board1 = await _context.PlayerBoardStates
+                .OrderByDescending(p => p.CreatedAt)
+                .FirstOrDefaultAsync(p => p.PlayerId == Game.PlayerAId);
+
+            var board2 = await _context.PlayerBoardStates
+                .OrderByDescending(p => p.CreatedAt)
+                .FirstOrDefaultAsync(p => p.PlayerId == Game.PlayerBId);
+
+            BattleShip.SetGameStateFromJsonString(board1.BoardState, BattleShip.Player1);
+            BattleShip.SetGameStateFromJsonString(board2.BoardState!, BattleShip.Player2);
             var player = BattleShip.Player1;
             var playerBoard = BattleShip.Board2;
 
@@ -118,8 +130,6 @@ namespace WebApp.Pages.GamePlay
                 player = BattleShip.Player2;
                 playerBoard = BattleShip.Board1;
             }
-
-
 
             if (Game.PlayerB.EPlayerType == EPlayerType.Ai && !BattleShip.NextMoveByX)
             {
@@ -133,7 +143,6 @@ namespace WebApp.Pages.GamePlay
                 await _context.SaveChangesAsync();
                 return RedirectToPage("/NextMove/Index", new {id = Game.GameId, message = Message});
 
-
             }
 
             if (x != null && y != null)
@@ -141,25 +150,35 @@ namespace WebApp.Pages.GamePlay
 
                 BattleShip.MakeAMove(x.Value, y.Value, playerBoard, BattleShip);
                 SaveGameToDb(player);
-
+                Game.NextMoveByX = BattleShip.NextMoveByX;
+                await _context.SaveChangesAsync();
 
                 if (BattleShip.TextWhenMiss)
                 {
                     Message = "You missed!";
 
-                    Game.NextMoveByX = BattleShip.NextMoveByX;
-                    await _context.SaveChangesAsync();
-
                     return RedirectToPage("/NextMove/Index", new {id = Game.GameId, message = Message});
                 }
                 Message = BattleShip.TextWhenHit ? "Hit!" : "Ship has been destroyed!";
 
+                if (BattleShip.GameIsOver)
+                {
+                    if (BattleShip.NextMove == ENextMoveAfterHit.OtherPlayer)
+                    {
+                        BattleShip.NextMoveByX = !BattleShip.NextMoveByX;
+                    }
+                    GameOver = "Game over!";
+
+
+                }
+                if(!BattleShip.GameIsOver && Game.GameOption.ENextMoveAfterHit == ENextMoveAfterHit.OtherPlayer)
+                {
+                    return RedirectToPage("/NextMove/Index", new {id = Game.GameId, message = Message});
+
+                }
+
             }
-            await _context.SaveChangesAsync();
-            // if(Message.Length > 1 && Game.GameOption.ENextMoveAfterHit == ENextMoveAfterHit.SamePlayer)
-            // {
-            //     return Page();
-            // }
+            BattleShip.GameIsOver = false;
 
             return Page();
         }

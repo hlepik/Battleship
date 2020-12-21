@@ -7,7 +7,6 @@ namespace DAL
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<Boat> Boats { get; set; } = null!;
         public DbSet<Game>? Games { get; set; } = null!;
         public DbSet<GameBoat>? GameBoats { get; set; } = null!;
         public DbSet<GameOption> GameOptions { get; set; } = null!;

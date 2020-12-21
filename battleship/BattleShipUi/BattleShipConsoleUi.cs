@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Drawing;
-using Domain;
+﻿using System.Drawing;
 using GameBrain;
 using Console = Colorful.Console;
 
@@ -14,7 +11,6 @@ namespace BattleShipUi
         public static void DrawBoard(CellState[,] board)
         {
             // add plus 1, since this is 0 based. length 0 is returned as -1;
-            var game = new BattleShip();
 
             var width = board.GetUpperBound(0) + 1; // x
             var height = board.GetUpperBound(1) + 1; // y
@@ -130,7 +126,6 @@ namespace BattleShipUi
             {
                 return " ";
             }
-
 
             return "-";
         }

@@ -28,11 +28,11 @@ namespace BattleShipUi
                     Console.ForegroundColor = Color.Blue;
                 }
 
-
             } while (input != "A" && input != "B" && input != "C");
 
             output = input switch
             {
+                "A" => EBoatsCanTouch.No,
                 "B" => EBoatsCanTouch.Corner,
                 "C" => EBoatsCanTouch.Yes,
                 _ => output
