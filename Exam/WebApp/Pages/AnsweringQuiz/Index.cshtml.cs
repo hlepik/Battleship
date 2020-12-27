@@ -27,9 +27,17 @@ namespace WebApp.Pages.AnsweringQuiz
         [BindProperty]
         public int Question { get; set; }
 
-
-
         public async Task<IActionResult> OnGetAsync(int id, string? submit, int? count, int? choice)
+        {
+            Quiz = await _context.Quizzes!
+                .Include(p => p.Questions)
+                .ThenInclude(p => p.Answer)
+                .FirstOrDefaultAsync(p => p.QuizId == id);
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(int id, string? submit, int? count, int? choice)
         {
             Quiz = await _context.Quizzes!
                 .Include(p =>p.Questions)
