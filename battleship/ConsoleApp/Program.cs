@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading;
 using BattleShipUi;
 using DAL;
 using Domain;
@@ -18,30 +19,30 @@ namespace ConsoleApp
             db.Database.Migrate();
 
 
-            // for (int j = 0; j < 100; j++)
-            // {
-            //     Console.Clear();
-            //
-            //     // steam
-            //     Console.Write("       . . . . o o o o o o", Color.LightGray);
-            //     for (int s = 0; s < j / 2; s++)
-            //     {
-            //         Console.Write(" o", Color.LightGray);
-            //     }
-            //     Console.WriteLine();
-            //
-            //     var margin = "".PadLeft(j);
-            //     Console.WriteLine(margin + "                 ____      o",    Color.DeepSkyBlue);
-            //     Console.WriteLine(margin + "                 |  |      o",    Color.DeepSkyBlue);
-            //     Console.WriteLine(margin + "      _____====__|OO|_n_n__]___   ", Color.DeepSkyBlue);
-            //     Console.WriteLine(margin + "      \\___[]__[]__[]__[]__[]__/ ", Color.DeepSkyBlue);
-            //     Console.WriteLine(margin + "      \\______________________/", Color.Blue);
-            //     Console.WriteLine("≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈" +
-            //                       "≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
-            //         Color.DarkBlue);
-            //
-            //     Thread.Sleep(150);
-            // }
+            for (int j = 0; j < 100; j++)
+            {
+                Console.Clear();
+
+                // steam
+                Console.Write("       . . . . o o o o o o", Color.LightGray);
+                for (int s = 0; s < j / 2; s++)
+                {
+                    Console.Write(" o", Color.LightGray);
+                }
+                Console.WriteLine();
+
+                var margin = "".PadLeft(j);
+                Console.WriteLine(margin + "                 ____      o",    Color.DeepSkyBlue);
+                Console.WriteLine(margin + "                 |  |      o",    Color.DeepSkyBlue);
+                Console.WriteLine(margin + "      _____====__|OO|_n_n__]___   ", Color.DeepSkyBlue);
+                Console.WriteLine(margin + "      \\___[]__[]__[]__[]__[]__/ ", Color.DeepSkyBlue);
+                Console.WriteLine(margin + "      \\______________________/", Color.Blue);
+                Console.WriteLine("≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈" +
+                                  "≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
+                    Color.DarkBlue);
+
+                Thread.Sleep(100);
+            }
 
 
 

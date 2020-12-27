@@ -1,0 +1,63 @@
+@page
+@model WebApp.Pages.GameBoats.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>GameBoat</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="GameBoat!.Size" class="control-label"></label>
+                <input asp-for="GameBoat!.Size" class="form-control" />
+                <span asp-validation-for="GameBoat!.Size" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GameBoat!.Name" class="control-label"></label>
+                <input asp-for="GameBoat!.Name" class="form-control" />
+                <span asp-validation-for="GameBoat!.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GameBoat!.LifeCount" class="control-label"></label>
+                <input asp-for="GameBoat!.LifeCount" class="form-control" />
+                <span asp-validation-for="GameBoat!.LifeCount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GameBoat!.Direction" class="control-label"></label>
+                <input asp-for="GameBoat!.Direction" class="form-control" />
+                <span asp-validation-for="GameBoat!.Direction" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GameBoat!.ShipId" class="control-label"></label>
+                <input asp-for="GameBoat!.ShipId" class="form-control" />
+                <span asp-validation-for="GameBoat!.ShipId" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="GameBoat!.IsSunken" /> @Html.DisplayNameFor(model => model.GameBoat!.IsSunken)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="GameBoat!.PlayerId" class="control-label"></label>
+                <select asp-for="GameBoat!.PlayerId" class ="form-control" asp-items="ViewBag.PlayerId"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

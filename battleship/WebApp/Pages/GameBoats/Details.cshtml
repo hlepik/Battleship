@@ -1,0 +1,61 @@
+@page
+@model WebApp.Pages.GameBoats.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>GameBoat</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameBoat!.Size)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameBoat!.Size)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameBoat!.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameBoat!.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameBoat!.LifeCount)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameBoat!.LifeCount)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameBoat!.Direction)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameBoat!.Direction)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameBoat!.ShipId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameBoat!.ShipId)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameBoat!.IsSunken)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameBoat!.IsSunken)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameBoat!.Player)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameBoat!.Player.Name)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.GameBoat!.GameBoatId">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>
