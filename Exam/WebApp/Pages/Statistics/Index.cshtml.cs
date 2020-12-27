@@ -1,30 +1,41 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using DAL;
-using Domain;
+using Microsoft.Extensions.Logging;
 
 namespace WebApp.Pages.Statistics
 {
-    public class IndexModel : PageModel
+    public class Index : PageModel
     {
         private readonly DAL.ApplicationDbContext _context;
+        private readonly ILogger<Index> _logger;
 
-        public IndexModel(DAL.ApplicationDbContext context)
+        public Index(ILogger<Index> logger, DAL.ApplicationDbContext context)
         {
             _context = context;
+            _logger = logger;
         }
+        public Quiz? Quiz { get; set; }
+        public PlayerAnswer? PlayerAnswer { get; set; }
 
-        public IList<Statistic> Statistic { get; set; } = null!;
-
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int id, string? submit)
         {
-            Statistic = await _context.Statistics!
-                .Include(s => s.Quiz).ToListAsync();
+
+            Quiz = await _context.Quizzes!
+                .Include(p => p.Questions)
+                .ThenInclude(p => p.Answer)
+                .FirstOrDefaultAsync(p => p.QuizId == id);
+
+
+            if (submit != null)
+            {
+                return RedirectToPage("/Pages/Index");
+            }
+
+            return Page();
         }
+
     }
 }

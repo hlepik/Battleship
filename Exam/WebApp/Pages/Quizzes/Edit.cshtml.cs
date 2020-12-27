@@ -30,14 +30,12 @@ namespace WebApp.Pages.Quizzes
                 return NotFound();
             }
 
-            Quiz = await _context.Quizzes
-                .Include(q => q.Players).FirstOrDefaultAsync(m => m.QuizId == id);
+            Quiz = await _context.Quizzes.FirstOrDefaultAsync(m => m.QuizId == id);
 
             if (Quiz == null)
             {
                 return NotFound();
             }
-           ViewData["PlayerId"] = new SelectList(_context.Players, "PlayerId", "PlayerId");
             return Page();
         }
 

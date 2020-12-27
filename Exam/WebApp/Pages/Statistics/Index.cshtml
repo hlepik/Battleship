@@ -1,54 +1,12 @@
 @page
-@model WebApp.Pages.Statistics.IndexModel
+@using WebApp.Pages.Shared
+@using Domain
+@model WebApp.Pages.Statistics.Index
 
-@{
-    ViewData["Title"] = "Index";
-}
+<div class="background">
 
-<h1>Index</h1>
+    <div class="container" align="center">
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Statistic[0].QuizName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Statistic[0].Count)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Statistic[0].CorrectAnswers)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Statistic[0].Quiz)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Statistic) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.QuizName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Count)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CorrectAnswers)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quiz.QuizId)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.StatisticId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.StatisticId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.StatisticId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        oleme siin
+    </div>
+</div>

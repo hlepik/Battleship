@@ -19,8 +19,19 @@ namespace WebApp.Pages.Answer
             _context = context;
         }
 
+        // public IActionResult OnGet()
+        // {
+        // ViewData["QuestionId"] = new SelectList(_context.Question, "QuestionId", "QuestionId");
+        //     return Page();
+        // }
+        public SelectList SelectList { get; set; } = null!;
         public IActionResult OnGet()
         {
+            SelectList =
+                new SelectList(
+                    _context.Question!.ToList(),
+                    nameof(Question.QuestionId),
+                    nameof(Question.Questions));
             return Page();
         }
 
@@ -31,12 +42,13 @@ namespace WebApp.Pages.Answer
         // more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Answer!.Add(Answers!);
+            _context.Answer!.Add(Answers);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

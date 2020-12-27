@@ -6,9 +6,11 @@ namespace Domain
     {
         public int AnswersId { get; set; }
         public string? Answer { get; set; }
-        public EChoices EChoices { get; set; }
+        public bool IsAnswerCorrect { get; set; }
 
-        public ICollection<Question> Questions { get; set; } = null!;
+        public int QuestionId { get; set; }
+        public Question? Question { get; set; }
+
 
 
     }

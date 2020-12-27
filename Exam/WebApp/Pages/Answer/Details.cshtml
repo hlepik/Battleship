@@ -18,10 +18,16 @@
             @Html.DisplayFor(model => model.Answers!.Answer)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Answers!.EChoices)
+            @Html.DisplayNameFor(model => model.Answers!.IsAnswerCorrect)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Answers!.EChoices)
+            @Html.DisplayFor(model => model.Answers!.IsAnswerCorrect)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Answers!.Question)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Answers!.Question!.QuestionId)
         </dd>
     </dl>
 </div>

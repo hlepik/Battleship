@@ -1,87 +1,87 @@
 ﻿
 @page
 <div class="background">
-@model IndexModel
+    @model IndexModel
 
-@{
-    ViewData["Title"] = "Home page";
-}
-
-<div class="text-center">
-    <h1 class="display-4">BATTLESHIP</h1>
-</div>
-
-@{
-    ViewData["Title"] = "Index";
-}
-<form method="post">
-    <div class="buttons" align="center" >
-
-        <button type="submit" class="btn btn-outline-info">New game</button>
-        <button type="submit" class="btn btn-outline-info" asp-route-ai="ai">New game with AI</button>
-
-    </div>
-</form>
-<form class="form-inline" method="get">
-    <table class="table table-borderless">
-        <td>
-        <input asp-for="FileName" class="form-control mb-0.9 mr-sm-1" placeholder="Find game"/>
-
-            <a><input asp-for="Btn" type="submit" value="Search" class="btn btn-outline-primary"/></a>
-            @if (!string.IsNullOrWhiteSpace(Model.FileName))
-            {
-                <a><input asp-for="Btn" type="submit" value="Reset" class="btn btn-outline-secondary"/></a>
-            }
-
-        </td>
-    </table>
-</form>
-
-
-<table class="table table-hover">
-    <thead>
-    <tr class="box-shadow">
-
-        <th>
-            @Html.DisplayNameFor(model => model.Game![0].Date)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Game![0].GameOption.Name)
-        </th>
-
-        <th>
-            @Html.DisplayNameFor(model => model.Game![0].PlayerA)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Game![0].PlayerB)
-        </th>
-        <th></th>
-    </tr>
-    </thead>
-
-    <tbody>
-    @foreach (var item in Model.Game!)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GameOption.Name)
-            </td>
-
-            <td>
-                @Html.DisplayFor(modelItem => item.PlayerA.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PlayerB.Name)
-            </td>
-            <td class="align-content-end">
-                <a class="btn btn-outline-info" asp-page="./Games/Edit" asp-route-id="@item.GameId">Load</a>
-                <a class="btn btn-outline-danger" asp-page="/Games/Delete" asp-route-id="@item.GameId">Delete</a>
-            </td>
-        </tr>
+    @{
+        ViewData["Title"] = "Home page";
     }
-    </tbody>
-</table>
+
+    <div class="text-center">
+        <h1 class="display-4">BATTLESHIP</h1>
+    </div>
+
+    @{
+        ViewData["Title"] = "Index";
+    }
+    <form method="post">
+        <div class="buttons" align="center" >
+
+            <button type="submit" class="btn btn-outline-info">New game</button>
+            <button type="submit" class="btn btn-outline-info" asp-route-ai="ai">New game with AI</button>
+
+        </div>
+    </form>
+    <form class="form-inline" method="get">
+        <table class="table table-borderless">
+            <td>
+                <input asp-for="FileName" class="form-control mb-0.9 mr-sm-1" placeholder="Find game"/>
+
+                <a><input asp-for="Btn" type="submit" value="Search" class="btn btn-outline-primary"/></a>
+                @if (!string.IsNullOrWhiteSpace(Model.FileName))
+                {
+                    <a><input asp-for="Btn" type="submit" value="Reset" class="btn btn-outline-secondary"/></a>
+                }
+
+            </td>
+        </table>
+    </form>
+
+
+    <table class="table table-hover">
+        <thead>
+        <tr class="box-shadow">
+
+            <th>
+                @Html.DisplayNameFor(model => model.Game![0].Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Game![0].GameOption.Name)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Game![0].PlayerA)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Game![0].PlayerB)
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+
+        <tbody>
+        @foreach (var item in Model.Game!)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GameOption.Name)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlayerA.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlayerB.Name)
+                </td>
+                <td class="align-content-end">
+                    <a class="btn btn-outline-info" asp-page="./Games/Edit" asp-route-id="@item.GameId">Load</a>
+                    <a class="btn btn-outline-danger" asp-page="/Games/Delete" asp-route-id="@item.GameId">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
 </div>

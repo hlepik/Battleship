@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain
 {
@@ -7,11 +8,12 @@ namespace Domain
     {
         public int QuizId { get; set; }
 
+        [MaxLength(64)]
         public string? Title { get; set; }
 
-        public int PlayerId { get; set; }
-        public Player Players { get; set; } = null!;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        public ICollection<Player>? Players { get; set; }
         public ICollection<Question>? Questions { get; set; }
 
 

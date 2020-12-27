@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using DAL;
 using Domain;
 
-namespace WebApp.Pages.Statistics
+namespace WebApp.Pages.PlayerAnswers
 {
     public class CreateModel : PageModel
     {
@@ -21,12 +21,12 @@ namespace WebApp.Pages.Statistics
 
         public IActionResult OnGet()
         {
-        ViewData["QuizId"] = new SelectList(_context.Quizzes, "QuizId", "QuizId");
+        ViewData["PlayerId"] = new SelectList(_context.Players, "PlayerId", "PlayerId");
             return Page();
         }
 
         [BindProperty]
-        public Statistic? Statistic { get; set; }
+        public PlayerAnswer? PlayerAnswer { get; set; }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://aka.ms/RazorPagesCRUD.
@@ -37,7 +37,7 @@ namespace WebApp.Pages.Statistics
                 return Page();
             }
 
-            _context.Statistics!.Add(Statistic!);
+            _context.PlayerAnswers!.Add(PlayerAnswer);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

@@ -28,7 +28,8 @@ namespace WebApp.Pages.Players
                 return NotFound();
             }
 
-            Player = await _context.Players.FirstOrDefaultAsync(m => m.PlayerId == id);
+            Player = await _context.Players
+                .Include(p => p.Quiz).FirstOrDefaultAsync(m => m.PlayerId == id);
 
             if (Player == null)
             {

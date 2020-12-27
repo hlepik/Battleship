@@ -1,0 +1,19 @@
+@page
+@model WebApp.Pages.UserForm.Index
+
+<div class="container" align="center">
+    <form method="post">
+        <div class="col-5" >
+        <div class="form-group">
+            <label asp-for="Player" align="left">Insert your Name</label>
+            <input asp-for="Player" class="form-control" id="Name" placeholder="Name">
+            <span asp-validation-for="Player" class="text-danger"></span>
+        </div>
+
+        <div class="start-button">
+            <button type="submit" class="btn btn-outline-primary">OK</button>
+        </div>
+    </div>
+    </form>
+
+</div>

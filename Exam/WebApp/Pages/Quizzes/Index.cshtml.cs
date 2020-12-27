@@ -23,8 +23,7 @@ namespace WebApp.Pages.Quizzes
 
         public async Task OnGetAsync()
         {
-            Quiz = await _context.Quizzes
-                .Include(q => q.Players).ToListAsync();
+            Quiz = await _context.Quizzes.ToListAsync();
         }
     }
 }

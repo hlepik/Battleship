@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using DAL;
 using Domain;
 
-namespace WebApp.Pages.Statistics
+namespace WebApp.Pages.PlayerAnswers
 {
     public class EditModel : PageModel
     {
@@ -21,7 +21,7 @@ namespace WebApp.Pages.Statistics
         }
 
         [BindProperty]
-        public Statistic? Statistic { get; set; }
+        public PlayerAnswer? PlayerAnswer { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,14 +30,14 @@ namespace WebApp.Pages.Statistics
                 return NotFound();
             }
 
-            Statistic = await _context.Statistics
-                .Include(s => s.Quiz).FirstOrDefaultAsync(m => m.StatisticId == id);
+            PlayerAnswer = await _context.PlayerAnswers
+                .Include(p => p.Player).FirstOrDefaultAsync(m => m.PlayerAnswerId == id);
 
-            if (Statistic == null)
+            if (PlayerAnswer == null)
             {
                 return NotFound();
             }
-           ViewData["QuizId"] = new SelectList(_context.Quizzes, "QuizId", "QuizId");
+           ViewData["PlayerId"] = new SelectList(_context.Players, "PlayerId", "PlayerId");
             return Page();
         }
 
@@ -50,7 +50,7 @@ namespace WebApp.Pages.Statistics
                 return Page();
             }
 
-            _context.Attach(Statistic).State = EntityState.Modified;
+            _context.Attach(PlayerAnswer).State = EntityState.Modified;
 
             try
             {
@@ -58,7 +58,7 @@ namespace WebApp.Pages.Statistics
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!StatisticExists(Statistic!.StatisticId))
+                if (!PlayerAnswerExists(PlayerAnswer!.PlayerAnswerId))
                 {
                     return NotFound();
                 }
@@ -71,9 +71,9 @@ namespace WebApp.Pages.Statistics
             return RedirectToPage("./Index");
         }
 
-        private bool StatisticExists(int id)
+        private bool PlayerAnswerExists(int id)
         {
-            return _context.Statistics.Any(e => e.StatisticId == id);
+            return _context.PlayerAnswers.Any(e => e.PlayerAnswerId == id);
         }
     }
 }

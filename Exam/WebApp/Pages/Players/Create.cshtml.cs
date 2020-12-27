@@ -21,6 +21,7 @@ namespace WebApp.Pages.Players
 
         public IActionResult OnGet()
         {
+        ViewData["QuizId"] = new SelectList(_context.Quizzes, "QuizId", "QuizId");
             return Page();
         }
 
@@ -36,7 +37,7 @@ namespace WebApp.Pages.Players
                 return Page();
             }
 
-            _context.Players!.Add(Player!);
+            _context.Players!.Add(Player);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

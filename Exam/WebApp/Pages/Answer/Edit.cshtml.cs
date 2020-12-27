@@ -30,12 +30,14 @@ namespace WebApp.Pages.Answer
                 return NotFound();
             }
 
-            Answers = await _context.Answer.FirstOrDefaultAsync(m => m.AnswersId == id);
+            Answers = await _context.Answer
+                .Include(a => a.Question).FirstOrDefaultAsync(m => m.AnswersId == id);
 
             if (Answers == null)
             {
                 return NotFound();
             }
+           ViewData["QuestionId"] = new SelectList(_context.Question, "QuestionId", "QuestionId");
             return Page();
         }
 

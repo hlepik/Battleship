@@ -17,11 +17,9 @@
                 @Html.DisplayNameFor(model => model.Question[0].Questions)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Question[0].Quiz)
+                @Html.DisplayNameFor(model => model.Question[0]!.Quiz!.Title)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Question[0].AnswerId)
-            </th>
+
             <th></th>
         </tr>
     </thead>
@@ -32,10 +30,7 @@
                 @Html.DisplayFor(modelItem => item.Questions)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Quiz.QuizId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AnswerId)
+                @Html.DisplayFor(modelItem => item.Quiz!.Title)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.QuestionId">Edit</a> |

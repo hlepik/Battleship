@@ -17,7 +17,10 @@
                 @Html.DisplayNameFor(model => model.Answers[0].Answer)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Answers[0].EChoices)
+                @Html.DisplayNameFor(model => model.Answers[0].IsAnswerCorrect)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Answers[0].Question)
             </th>
             <th></th>
         </tr>
@@ -29,7 +32,10 @@
                 @Html.DisplayFor(modelItem => item.Answer)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.EChoices)
+                @Html.DisplayFor(modelItem => item.IsAnswerCorrect)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Question!.Questions)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.AnswersId">Edit</a> |

@@ -1,4 +1,5 @@
 ﻿@page
+<div class="background">
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
@@ -6,5 +7,54 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<form class="form-inline" method="get">
+    <table class="table table-borderless">
+        <td>
+            <input asp-for="Title" class="form-control mb-0.9 mr-sm-1" placeholder="Find game"/>
+
+            <a><input asp-for="Btn" type="submit" value="Search" class="btn btn-outline-primary"/></a>
+            @if (!string.IsNullOrWhiteSpace(Model.Title))
+            {
+                <a><input asp-for="Btn" type="submit" value="Reset" class="btn btn-outline-secondary"/></a>
+            }
+
+        </td>
+    </table>
+</form>
+
+<table class="table table-hover">
+    <thead>
+    <tr class="box-shadow">
+
+        <th>
+            @Html.DisplayNameFor(model => model.Quizzes![0].CreatedAt)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Quizzes![0].Title)
+        </th>
+
+    </tr>
+    </thead>
+
+    <tbody>
+    @foreach (var item in Model.Quizzes!)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+
+            <td class="align-content-end">
+                <a class="btn btn-outline-info" asp-page="/UserForm/Index" asp-route-id="@item.QuizId">Start</a>
+                <a class="btn btn-outline-danger" asp-page="/Quizzes/Delete" asp-route-id="@item.QuizId">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
 </div>

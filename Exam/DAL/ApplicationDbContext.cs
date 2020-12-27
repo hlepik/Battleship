@@ -11,7 +11,7 @@ namespace DAL
         public DbSet<Player>? Players { get; set; }
         public DbSet<Question>? Question { get; set; }
         public DbSet<Quiz>? Quizzes { get; set; }
-        public DbSet<Statistic>? Statistics { get; set; }
+        public DbSet<PlayerAnswer>? PlayerAnswers { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

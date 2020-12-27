@@ -23,7 +23,8 @@ namespace WebApp.Pages.Answer
 
         public async Task OnGetAsync()
         {
-            Answers = await _context.Answer.ToListAsync();
+            Answers = await _context.Answer
+                .Include(a => a.Question).ToListAsync();
         }
     }
 }

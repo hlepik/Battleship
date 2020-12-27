@@ -1,0 +1,26 @@
+@page
+@model WebApp.Pages.AnsweringQuiz.Index
+
+<form method="post">
+<div class="container" align="center">
+
+    @{ var count = 0; }
+    @foreach (var each in @Model.Quiz!.Questions!)
+    {
+        if (Model.Question == count)
+        {
+            <div >@each.Questions</div>
+            @foreach (var answer in each.Answer!)
+            {
+                 <input type="radio" asp-for="UserChoice" value="@answer.AnswersId" />@answer.Answer<br />
+            }
+
+        }
+        count += 1;
+
+    }
+
+    <td><a class="btn btn-outline-info"  asp-route-id="@Model.Quiz?.QuizId"  asp-route-count="@Model.Question" asp-route-submit="next">Next</a></td>
+</div>
+
+</form>

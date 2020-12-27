@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using DAL;
 using Domain;
 
-namespace WebApp.Pages.Statistics
+namespace WebApp.Pages.PlayerAnswers
 {
     public class DetailsModel : PageModel
     {
@@ -19,7 +19,7 @@ namespace WebApp.Pages.Statistics
             _context = context;
         }
 
-        public Statistic? Statistic { get; set; }
+        public PlayerAnswer? PlayerAnswer { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -28,10 +28,10 @@ namespace WebApp.Pages.Statistics
                 return NotFound();
             }
 
-            Statistic = await _context.Statistics
-                .Include(s => s.Quiz).FirstOrDefaultAsync(m => m.StatisticId == id);
+            PlayerAnswer = await _context.PlayerAnswers
+                .Include(p => p.Player).FirstOrDefaultAsync(m => m.PlayerAnswerId == id);
 
-            if (Statistic == null)
+            if (PlayerAnswer == null)
             {
                 return NotFound();
             }
