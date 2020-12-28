@@ -20,21 +20,28 @@
                 <span asp-validation-for="Question!.Questions" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Question!.QuizId" class="control-label"></label>
-                <select asp-for="Question!.QuizId" class="form-control" asp-items="ViewBag.QuizId"></select>
+                <label asp-for="Question!.QuizId" class="control-label">Quiz name</label>
+                <select asp-for="Question!.QuizId" class ="form-control" asp-items="Model.TitleSelectList"></select>
                 <span asp-validation-for="Question!.QuizId" class="text-danger"></span>
             </div>
-
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Question!.IsHavingAnswer" /> @Html.DisplayNameFor(model => model.Question!.IsHavingAnswer)
+                </label>
             </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-outline-primary" />
+            </div>
+
         </form>
     </div>
 </div>
 
 <div>
     <a asp-page="./Index">Back to List</a>
+
 </div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

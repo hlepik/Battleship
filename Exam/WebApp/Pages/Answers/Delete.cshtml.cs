@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using DAL;
 using Domain;
 
-namespace WebApp.Pages.Answer
+namespace WebApp.Pages.Answers
 {
     public class DeleteModel : PageModel
     {
@@ -20,7 +20,7 @@ namespace WebApp.Pages.Answer
         }
 
         [BindProperty]
-        public Answers? Answers { get; set; }
+        public Answer? Answer { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -29,10 +29,10 @@ namespace WebApp.Pages.Answer
                 return NotFound();
             }
 
-            Answers = await _context.Answer
-                .Include(a => a.Question).FirstOrDefaultAsync(m => m.AnswersId == id);
+            Answer = await _context.Answers
+                .Include(a => a.Question).FirstOrDefaultAsync(m => m.AnswerId == id);
 
-            if (Answers == null)
+            if (Answer == null)
             {
                 return NotFound();
             }
@@ -46,11 +46,11 @@ namespace WebApp.Pages.Answer
                 return NotFound();
             }
 
-            Answers = await _context.Answer!.FindAsync(id);
+            Answer = await _context.Answers.FindAsync(id);
 
-            if (Answers != null)
+            if (Answer != null)
             {
-                _context.Answer.Remove(Answers);
+                _context.Answers.Remove(Answer);
                 await _context.SaveChangesAsync();
             }
 

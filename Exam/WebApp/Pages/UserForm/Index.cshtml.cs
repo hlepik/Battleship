@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +13,12 @@ namespace WebApp.Pages.UserForm
     {
         [BindProperty, MaxLength(128)] public string Player { get; set; } = null!;
         private readonly DAL.ApplicationDbContext _context;
-        private readonly ILogger<Index> _logger;
 
-        public Index(ILogger<Index> logger, DAL.ApplicationDbContext context)
+
+        public Index( DAL.ApplicationDbContext context)
         {
             _context = context;
-            _logger = logger;
+
         }
 
         public Quiz? Quiz { get; set; }
@@ -50,7 +51,22 @@ namespace WebApp.Pages.UserForm
             };
             _context.Add(player);
             await _context.SaveChangesAsync();
-            return RedirectToPage("/AnsweringQuiz/Index", new {id = Quiz.QuizId});
+
+            var playerId = 0;
+            foreach (var each in _context.Players.Where(p =>p.QuizId == id))
+            {
+                playerId = each.PlayerId;
+            }
+            var playerAnswer = new PlayerAnswer()
+            {
+                Count = 0,
+                CorrectAnswersCount = 0,
+                PlayerId = playerId
+
+            };
+            _context.Add(playerAnswer);
+            await _context.SaveChangesAsync();
+            return RedirectToPage("/AnsweringQuiz/Index", new {id = Quiz.QuizId, playerId = playerId});
 
 
         }

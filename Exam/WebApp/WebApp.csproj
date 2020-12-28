@@ -46,6 +46,16 @@
       <UpToDateCheckInput Remove="Pages\Answer\Details.cshtml" />
       <UpToDateCheckInput Remove="Pages\Answer\Edit.cshtml" />
       <UpToDateCheckInput Remove="Pages\Answer\Index.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Answer\Create.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Answer\Delete.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Answer\Details.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Answer\Edit.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Answer\Index.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Questions\Create.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Questions\Delete.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Questions\Details.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Questions\Edit.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Questions\Index.cshtml" />
     </ItemGroup>
 
 </Project>

@@ -19,27 +19,27 @@ namespace DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Domain.Answers", b =>
+            modelBuilder.Entity("Domain.Answer", b =>
                 {
-                    b.Property<int>("AnswersId")
+                    b.Property<int>("AnswerId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Answer")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsAnswerCorrect")
                         .HasColumnType("bit");
+
+                    b.Property<string>("QuestionAnswer")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
-                    b.HasKey("AnswersId");
+                    b.HasKey("AnswerId");
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("Answer");
+                    b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("Domain.Player", b =>
@@ -93,6 +93,9 @@ namespace DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("IsHavingAnswer")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Questions")
                         .HasColumnType("nvarchar(500)")
                         .HasMaxLength(500);
@@ -126,7 +129,7 @@ namespace DAL.Migrations
                     b.ToTable("Quizzes");
                 });
 
-            modelBuilder.Entity("Domain.Answers", b =>
+            modelBuilder.Entity("Domain.Answer", b =>
                 {
                     b.HasOne("Domain.Question", "Question")
                         .WithMany("Answer")

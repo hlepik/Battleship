@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain;
@@ -24,10 +25,12 @@ namespace WebApp.Pages.AnsweringQuiz
         [BindProperty(SupportsGet = true)]
         public int UserChoice { get; set; }
 
-        [BindProperty]
+        [BindProperty(SupportsGet = true)]
         public int Question { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id, string? submit, int? count, int? choice)
+        public string Message { get; set; } = "";
+
+        public async Task<IActionResult> OnGetAsync(int id, int playerId)
         {
             Quiz = await _context.Quizzes!
                 .Include(p => p.Questions)
@@ -37,7 +40,8 @@ namespace WebApp.Pages.AnsweringQuiz
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int id, string? submit, int? count, int? choice)
+
+        public async Task<IActionResult> OnPostAsync(int id, int playerId)
         {
             Quiz = await _context.Quizzes!
                 .Include(p =>p.Questions)
@@ -45,20 +49,47 @@ namespace WebApp.Pages.AnsweringQuiz
                 .FirstOrDefaultAsync(p => p.QuizId == id);
 
 
-            if (submit != null)
+            if (UserChoice == 0)
             {
-                if (count != null)
+                return Page();
+            }
+            var correct = 0;
+            foreach (var each in _context.Answers.Where(p => p.AnswerId == UserChoice))
+            {
+                if (each.IsAnswerCorrect)
                 {
-                    Question = count!.Value;
+                    correct = 1;
+                    Message = "Last Answer was correct!";
                 }
-
-                Question += 1;
-
-                if (Question == Quiz.Questions!.Count)
+                else
                 {
-                    return RedirectToPage("/Statistics/Index", new {id = Quiz.QuizId});
+                    foreach (var all in _context.Question.Where(p => p.QuestionId == each.QuestionId))
+                    {
+                        if (!all.IsHavingAnswer)
+                        {
+                            correct = 1;
+                        }
+
+                    }
                 }
             }
+
+            foreach (var each in _context.PlayerAnswers.Where(p =>p.PlayerId == playerId))
+            {
+                each.Count += 1;
+                Question = each.Count;
+                each.CorrectAnswersCount += correct;
+            }
+            await _context.SaveChangesAsync();
+
+
+
+            if (Question >= Quiz.Questions!.Count)
+            {
+                return RedirectToPage("/Statistics/Index", new {id = Quiz.QuizId, playerId = playerId});
+            }
+
+            UserChoice = 0;
             return Page();
 
         }

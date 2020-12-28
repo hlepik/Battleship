@@ -2,24 +2,41 @@
 @model WebApp.Pages.AnsweringQuiz.Index
 
 <form method="post">
-<div class="container" align="center">
+ @if (Model.Message.Length > 0)
+    {
+        <div align="center" class="alert alert-success" role="alert">@Model.Message</div>
+    }
+    else if(Model.Question != 0)
+    {
+        <div class="alert alert-danger" role="alert">Last answer was incorrect!</div>
+    }
+<div class="container" id="box" align="left">
 
-    @{ var count = 0; }
+    <div class="row">
+        <div id="mydiv">
+        @{ var count = 0; }
     @foreach (var each in @Model.Quiz!.Questions!)
     {
         if (Model.Question == count)
         {
-            <div >@each.Questions</div>
+            <h2>@each.Questions</h2>
+
+            <div class="box">
             @foreach (var answer in each.Answer!)
             {
-                 <input type="radio" asp-for="UserChoice" value="@answer.AnswersId" />@answer.Answer<br />
+
+                <input  class="radio-buttons" class="box" type="radio" asp-for="UserChoice" value="@answer.AnswerId" />@answer.QuestionAnswer<br />
             }
-        }
+            </div>
+         }
         count += 1;
-
     }
-
-    <td><a class="btn btn-outline-info"  asp-route-id="@Model.Quiz?.QuizId"  asp-route-count="@Model.Question" asp-route-submit="next">Next</a></td>
+        @{ Model.Question += 1; }
+        <div class="container"  align="center">
+            <button type="submit" class="btn btn-outline-primary ">Next</button>
+                  </div>
+ </div>
+             </div>
 </div>
 
 </form>

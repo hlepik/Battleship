@@ -19,19 +19,26 @@ namespace WebApp.Pages.Questions
             _context = context;
         }
 
-        // public IActionResult OnGet()
-        // {
-        // ViewData["QuizId"] = new SelectList(_context.Quizzes, "QuizId", "QuizId");
-        //     return Page();
-        // }
         public SelectList TitleSelectList { get; set; } = null!;
-        public IActionResult OnGet()
+        public IActionResult OnGet(int id)
         {
-            TitleSelectList =
-                new SelectList(
-                    _context.Quizzes.ToList(),
-                    nameof(Quiz.QuizId),
-                    nameof(Quiz.Title));
+            if (id == null)
+            {
+                TitleSelectList =
+                    new SelectList(
+                        _context.Quizzes.ToList(),
+                        nameof(Quiz.QuizId),
+                        nameof(Quiz.Title));
+            }
+            else
+            {
+                TitleSelectList =
+                    new SelectList(
+                        _context.Quizzes.ToList().Where(p =>p.QuizId == id),
+                        nameof(Quiz.QuizId),
+                        nameof(Quiz.Title));
+            }
+
             return Page();
         }
 
@@ -48,7 +55,7 @@ namespace WebApp.Pages.Questions
                 return Page();
             }
 
-            _context.Question!.Add(Question);
+            _context.Question.Add(Question);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

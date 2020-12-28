@@ -1,0 +1,51 @@
+@page
+@model WebApp.Pages.Answers.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Question Answer
+                @* @Html.DisplayNameFor(model => model.Answer[0].QuestionAnswer) *@
+            </th>
+            <th>
+                Is Answer correct?
+                @* @Html.DisplayNameFor(model => model.Answer[0].IsAnswerCorrect) *@
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Answer[0].Question)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Answer) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.QuestionAnswer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsAnswerCorrect)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Question!.Questions)
+            </td>
+
+            <td class="align-content-end" align="right">
+                <a class="btn btn-outline-success" asp-page="./Edit" asp-route-id="@item.AnswerId">Edit</a>
+                <a class="btn btn-outline-danger" asp-page="./Delete" asp-route-id="@item.AnswerId">Delete</a>
+
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

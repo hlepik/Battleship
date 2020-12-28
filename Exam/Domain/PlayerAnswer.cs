@@ -9,6 +9,7 @@ namespace Domain
         public int CorrectAnswersCount { get; set; }
         public int Count { get; set; }
 
+
         public int PlayerId { get; set; }
         public Player Player { get; set; } = null!;
     }

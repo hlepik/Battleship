@@ -1,5 +1,5 @@
 @page
-@model WebApp.Pages.Answer.DeleteModel
+@model WebApp.Pages.Answers.DeleteModel
 
 @{
     ViewData["Title"] = "Delete";
@@ -9,31 +9,31 @@
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>Answers</h4>
+    <h4>Answer</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Answers!.Answer)
+            @Html.DisplayNameFor(model => model.Answer!.QuestionAnswer)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Answers!.Answer)
+            @Html.DisplayFor(model => model.Answer!.QuestionAnswer)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Answers!.IsAnswerCorrect)
+            @Html.DisplayNameFor(model => model.Answer!.IsAnswerCorrect)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Answers!.IsAnswerCorrect)
+            @Html.DisplayFor(model => model.Answer!.IsAnswerCorrect)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Answers!.Question)
+            @Html.DisplayNameFor(model => model.Answer!.Question)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Answers!.Question!.QuestionId)
+            @Html.DisplayFor(model => model.Answer!.Question!.QuestionId)
         </dd>
     </dl>
 
     <form method="post">
-        <input type="hidden" asp-for="Answers!.AnswersId" />
+        <input type="hidden" asp-for="Answer!.AnswerId" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-page="./Index">Back to List</a>
     </form>

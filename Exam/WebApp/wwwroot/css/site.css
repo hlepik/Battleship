@@ -6,6 +6,55 @@ a.navbar-brand {
   text-align: center;
   word-break: break-all;
 }
+h2{
+  font-family: Arial;
+  padding-top: 1rem;
+  text-align: center;
+  color: #117a8b;
+  size: 4rem;
+
+}
+#text-main{
+  color: cadetblue;
+  size: 3rem;
+  padding-top: 2rem;
+}
+h1{
+  color: #0c5460;
+  font-family: Futura;
+}
+
+.box {
+  padding-left: 2rem;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+#box{
+  padding-top: 2rem;
+  padding-left: 10rem;
+}
+#name{
+  padding-top: 5rem;
+  font-family: Arial;
+  color: #117a8b;
+  size: 4rem;
+}
+#mydiv {
+  position:fixed;
+  top: 50%;
+  left: 45%;
+  width:40em;
+  height:25em;
+  margin-top: -9em; /*set to a negative number 1/2 of your height*/
+  margin-left: -15em; /*set to a negative number 1/2 of your width*/
+  border: 1px solid cornsilk;
+  background-color: cornsilk;
+}
+
+
 
 /* Provide sufficient contrast against white background */
 a {

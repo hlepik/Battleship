@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = "Home page";
 }
-
+<div class="container align-content-center">
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
 </div>
@@ -12,7 +12,7 @@
 <form class="form-inline" method="get">
     <table class="table table-borderless">
         <td>
-            <input asp-for="Title" class="form-control mb-0.9 mr-sm-1" placeholder="Find game"/>
+            <input asp-for="Title" class="form-control mb-0.9 mr-sm-1" placeholder="Find quiz"/>
 
             <a><input asp-for="Btn" type="submit" value="Search" class="btn btn-outline-primary"/></a>
             @if (!string.IsNullOrWhiteSpace(Model.Title))
@@ -25,36 +25,40 @@
 </form>
 
 <table class="table table-hover">
-    <thead>
-    <tr class="box-shadow">
+        <thead>
+        <tr>
 
         <th>
             @Html.DisplayNameFor(model => model.Quizzes![0].CreatedAt)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Quizzes![0].Title)
-        </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quizzes![0].Title)
+            </th>
+        <th></th>
 
-    </tr>
+        </tr>
     </thead>
 
     <tbody>
     @foreach (var item in Model.Quizzes!)
     {
         <tr>
-            <td>
+            <th>
                 @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
+            </th>
+            <th>
                 @Html.DisplayFor(modelItem => item.Title)
-            </td>
+            </th>
 
-            <td class="align-content-end">
+
+            <td class="align-content-end" align="right">
                 <a class="btn btn-outline-info" asp-page="/UserForm/Index" asp-route-id="@item.QuizId">Start</a>
+                <a class="btn btn-outline-success" asp-page="/Statistics/Index" asp-route-id="@item.QuizId">View statistics</a>
                 <a class="btn btn-outline-danger" asp-page="/Quizzes/Delete" asp-route-id="@item.QuizId">Delete</a>
             </td>
         </tr>
     }
     </tbody>
 </table>
+</div>
 </div>

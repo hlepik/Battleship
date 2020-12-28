@@ -7,19 +7,16 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using DAL;
 using Domain;
+using Microsoft.Extensions.Logging;
 
 namespace WebApp.Pages.Quizzes
 {
     public class DetailsModel : PageModel
     {
-        private readonly DAL.ApplicationDbContext _context;
 
-        public DetailsModel(DAL.ApplicationDbContext context)
-        {
-            _context = context;
-        }
 
         public Quiz? Quiz { get; set; }
+
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -28,12 +25,14 @@ namespace WebApp.Pages.Quizzes
                 return NotFound();
             }
 
-            Quiz = await _context.Quizzes.FirstOrDefaultAsync(m => m.QuizId == id);
 
             if (Quiz == null)
             {
                 return NotFound();
             }
+
+
+
             return Page();
         }
     }

@@ -1,0 +1,53 @@
+@page
+@model WebApp.Pages.Answers.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+@if (Model.Message.Length > 0)
+    {
+        <div class="alert alert-danger" role="alert">@Model.Message</div>
+    }
+
+<h1>Create</h1>
+
+<h4>Answer</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Answer!.QuestionAnswer" class="control-label">Question answer</label>
+                <input asp-for="Answer!.QuestionAnswer" class="form-control" />
+                <span asp-validation-for="Answer!.QuestionAnswer" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Answer!.QuestionId" class="control-label">Question</label>
+                <select asp-for="Answer!.QuestionId" class ="form-control" asp-items="Model.SelectList"></select>
+
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Answer!.IsAnswerCorrect"/>
+                    Is Answer correct?
+                    @* @Html.DisplayNameFor(model => model.Answer!.IsAnswerCorrect) *@
+
+                </label>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-outline-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

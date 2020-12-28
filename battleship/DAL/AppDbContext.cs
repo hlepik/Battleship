@@ -7,11 +7,11 @@ namespace DAL
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<Game>? Games { get; set; } = null!;
-        public DbSet<GameBoat>? GameBoats { get; set; } = null!;
-        public DbSet<GameOption> GameOptions { get; set; } = null!;
-        public DbSet<Player> Players{ get; set; } = null!;
-        public DbSet<PlayerBoardState> PlayerBoardStates { get; set; } = null!;
+        public DbSet<Game>? Games { get; set; } = default!;
+        public DbSet<GameBoat> GameBoats { get; set; }  = default!;
+        public DbSet<GameOption> GameOptions { get; set; } = default!;
+        public DbSet<Player> Players{ get; set; }  = default!;
+        public DbSet<PlayerBoardState> PlayerBoardStates { get; set; }  = default!;
 
 
         private static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(

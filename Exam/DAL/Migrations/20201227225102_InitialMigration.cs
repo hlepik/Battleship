@@ -48,7 +48,8 @@ namespace DAL.Migrations
                     QuestionId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Questions = table.Column<string>(maxLength: 500, nullable: true),
-                    QuizId = table.Column<int>(nullable: false)
+                    QuizId = table.Column<int>(nullable: false),
+                    IsHavingAnswer = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -83,20 +84,20 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Answer",
+                name: "Answers",
                 columns: table => new
                 {
-                    AnswersId = table.Column<int>(nullable: false)
+                    AnswerId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Answer = table.Column<string>(nullable: true),
+                    QuestionAnswer = table.Column<string>(nullable: true),
                     IsAnswerCorrect = table.Column<bool>(nullable: false),
                     QuestionId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Answer", x => x.AnswersId);
+                    table.PrimaryKey("PK_Answers", x => x.AnswerId);
                     table.ForeignKey(
-                        name: "FK_Answer_Question_QuestionId",
+                        name: "FK_Answers_Question_QuestionId",
                         column: x => x.QuestionId,
                         principalTable: "Question",
                         principalColumn: "QuestionId",
@@ -104,8 +105,8 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Answer_QuestionId",
-                table: "Answer",
+                name: "IX_Answers_QuestionId",
+                table: "Answers",
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
@@ -127,7 +128,7 @@ namespace DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Answer");
+                name: "Answers");
 
             migrationBuilder.DropTable(
                 name: "PlayerAnswers");

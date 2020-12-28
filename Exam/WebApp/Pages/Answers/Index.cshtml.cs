@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using DAL;
 using Domain;
 
-namespace WebApp.Pages.Answer
+namespace WebApp.Pages.Answers
 {
     public class IndexModel : PageModel
     {
@@ -19,11 +19,11 @@ namespace WebApp.Pages.Answer
             _context = context;
         }
 
-        public IList<Answers> Answers { get; set; } = null!;
+        public IList<Answer> Answer { get; set; } = null!;
 
         public async Task OnGetAsync()
         {
-            Answers = await _context.Answer
+            Answer = await _context.Answers
                 .Include(a => a.Question).ToListAsync();
         }
     }

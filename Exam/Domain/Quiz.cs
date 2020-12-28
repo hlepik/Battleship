@@ -13,6 +13,7 @@ namespace Domain
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+
         public ICollection<Player>? Players { get; set; }
         public ICollection<Question>? Questions { get; set; }
 

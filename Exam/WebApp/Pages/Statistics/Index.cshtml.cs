@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -18,10 +19,16 @@ namespace WebApp.Pages.Statistics
             _logger = logger;
         }
         public Quiz? Quiz { get; set; }
-        public PlayerAnswer? PlayerAnswer { get; set; }
+        public int Count { get; set; }
+        public int CorrectAnswers { get; set; }
+        public int AllCount { get; set; }
+        public int AllAnswers { get; set; }
+        public int QuestionsCount { get; set; }
+        public double CalculatedResult { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id, string? submit)
+        public async Task<IActionResult> OnGetAsync(int id, int playerId, string? submit)
         {
+
 
             Quiz = await _context.Quizzes!
                 .Include(p => p.Questions)
@@ -29,11 +36,33 @@ namespace WebApp.Pages.Statistics
                 .FirstOrDefaultAsync(p => p.QuizId == id);
 
 
+            foreach (var each in _context.Players.Where(p =>p.QuizId == id))
+            {
+                AllCount += 1;
+                foreach (var all in _context.PlayerAnswers.Where(p =>p.PlayerId == each.PlayerId))
+                {
+                    AllAnswers += all.CorrectAnswersCount;
+                }
+            }
+
+            foreach (var each in _context.Question.Where(p =>p.QuizId == id))
+            {
+                QuestionsCount += 1;
+            }
+
+            foreach (var each in _context.PlayerAnswers.Where(p =>p.PlayerId == playerId))
+            {
+                Count = each.Count;
+                CorrectAnswers = each.CorrectAnswersCount;
+
+            }
+
             if (submit != null)
             {
                 return RedirectToPage("/Pages/Index");
             }
 
+            CalculatedResult = AllAnswers * QuestionsCount / AllCount;
             return Page();
         }
 

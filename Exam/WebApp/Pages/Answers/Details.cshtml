@@ -1,0 +1,37 @@
+@page
+@model WebApp.Pages.Answers.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Answer</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Answer!.QuestionAnswer)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Answer!.QuestionAnswer)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Answer!.IsAnswerCorrect)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Answer!.IsAnswerCorrect)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Answer!.Question)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Answer!.Question!.QuestionId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Answer!.AnswerId">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

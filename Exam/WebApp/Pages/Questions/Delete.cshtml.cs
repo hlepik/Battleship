@@ -46,7 +46,7 @@ namespace WebApp.Pages.Questions
                 return NotFound();
             }
 
-            Question = await _context.Question!.FindAsync(id);
+            Question = await _context.Question.FindAsync(id);
 
             if (Question != null)
             {

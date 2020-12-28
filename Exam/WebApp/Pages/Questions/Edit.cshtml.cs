@@ -23,8 +23,15 @@ namespace WebApp.Pages.Questions
         [BindProperty]
         public Question? Question { get; set; }
 
+        public SelectList TitleSelectList { get; set; } = null!;
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            TitleSelectList =
+                new SelectList(
+                    _context.Quizzes.ToList(),
+                    nameof(Quiz.QuizId),
+                    nameof(Quiz.Title));
+
             if (id == null)
             {
                 return NotFound();
@@ -37,14 +44,22 @@ namespace WebApp.Pages.Questions
             {
                 return NotFound();
             }
-           ViewData["QuizId"] = new SelectList(_context.Quizzes, "QuizId", "QuizId");
+            ViewData["QuizId"] = new SelectList(_context.Quizzes, "QuizId", "QuizId");
             return Page();
+
+
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            TitleSelectList =
+                new SelectList(
+                    _context.Quizzes.ToList(),
+                    nameof(Quiz.QuizId),
+                    nameof(Quiz.Title));
+
             if (!ModelState.IsValid)
             {
                 return Page();

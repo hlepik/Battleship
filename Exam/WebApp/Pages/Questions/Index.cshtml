@@ -17,9 +17,11 @@
                 @Html.DisplayNameFor(model => model.Question[0].Questions)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Question[0]!.Quiz!.Title)
+                 Has an answer?
             </th>
-
+            <th>
+                @Html.DisplayNameFor(model => model.Question[0].Quiz)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -30,12 +32,17 @@
                 @Html.DisplayFor(modelItem => item.Questions)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Quiz!.Title)
+                @Html.DisplayFor(modelItem => item.IsHavingAnswer)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.QuestionId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.QuestionId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.QuestionId">Delete</a>
+
+                @Html.DisplayFor(modelItem => item.Quiz!.Title)
+            </td>
+
+            <td class="align-content-end" align="right">
+                <a class="btn btn-outline-success" asp-page="./Edit" asp-route-id="@item.QuestionId">Edit</a>
+                <a class="btn btn-outline-primary" asp-page="/Answers/Create" asp-route-id="@item.QuestionId">Add</a>
+                <a class="btn btn-outline-danger" asp-page="./Delete" asp-route-id="@item.QuestionId">Delete</a>
             </td>
         </tr>
 }

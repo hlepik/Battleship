@@ -25,10 +25,10 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.QuizId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.QuizId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.QuizId">Delete</a>
+            <td class="align-content-end" align="right">
+                <a class="btn btn-outline-success" asp-page="./Edit" asp-route-id="@item.QuizId">Edit</a>
+                <a class="btn btn-outline-primary" asp-page="/Questions/Create" asp-route-id="@item.QuizId">Add questions</a>
+                <a class="btn btn-outline-danger" asp-page="./Delete" asp-route-id="@item.QuizId">Delete</a>
             </td>
         </tr>
 }
