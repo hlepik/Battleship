@@ -30,7 +30,6 @@ namespace WebApp.Pages.PlaceTheBoats
         [BindProperty(SupportsGet = true)]public int CurrentBoatId { get; set; } = 0;
         public int Size { get; set; }
         public string Message { get; set; } = "";
-        public int? LastShipId { get; set; }
         [BindProperty(SupportsGet = true)]public string? Random { get; set; }
         public string? Ready { get; set; }
 
@@ -130,9 +129,7 @@ namespace WebApp.Pages.PlaceTheBoats
                 .Where(p => p.GameId == id)
                 .Include(p => p.GameOption)
                 .Include(p => p.PlayerA)
-                .Include(p => p.PlayerA)
                 .ThenInclude(p => p.GameBoats)
-                .Include(p => p.PlayerB)
                 .Include(p => p.PlayerB)
                 .ThenInclude(p => p.GameBoats)
                 .FirstOrDefaultAsync();

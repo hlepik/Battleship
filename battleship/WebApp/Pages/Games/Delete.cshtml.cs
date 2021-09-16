@@ -57,7 +57,7 @@ namespace WebApp.Pages.Games
                     .Include(p => p.PlayerB)
                     .Include(p => p.GameOption)
                     .FirstOrDefault(p => p.GameId == id);
-                _context.Games.Remove(Game);
+                _context.Games.Remove(Game!);
                 await _context.SaveChangesAsync();
 
                 var boat = _context.GameBoats!

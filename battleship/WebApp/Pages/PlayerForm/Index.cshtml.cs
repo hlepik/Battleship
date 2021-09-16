@@ -75,7 +75,7 @@ namespace WebApp.Pages.PlayerForm
                 return Page();
             }
 
-            if (PlayerB == "AI" && string.IsNullOrWhiteSpace(GameName) || string.IsNullOrWhiteSpace(PlayerA)|| GameName.Length <2 ||
+            if (PlayerB == "AI" || string.IsNullOrWhiteSpace(GameName) || string.IsNullOrWhiteSpace(PlayerA)|| GameName.Length <2 ||
                 GameName.Length > 128 || PlayerA.Length < 2 || PlayerA.Length > 128)
             {
                 return Page();

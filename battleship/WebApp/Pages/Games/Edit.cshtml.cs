@@ -47,7 +47,7 @@ namespace WebApp.Pages.Games
                 }
             }
 
-            if (Game.PlayerB.GameBoats.Any(each => !each.IsInserted))
+            if (Game.PlayerB.GameBoats!.Any(each => !each.IsInserted))
             {
                 return RedirectToPage("/PlaceTheBoats/Index", new {id = Game.GameId});
             }
